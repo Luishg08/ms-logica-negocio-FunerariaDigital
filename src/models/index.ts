@@ -4,3 +4,7 @@ export * from './cliente.model';
 export * from './beneficiario.model';
 export * from './estado-beneficiario.model';
 export * from './servicio-funerario.model';
+export * from './departamento.model';
+export * from './ciudad.model';
+export * from './sede.model';
+export * from './sala.model';
