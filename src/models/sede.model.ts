@@ -1,13 +1,19 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Plan extends Entity {
+export class Sede extends Entity {
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
-  idPlan: number;
+  idSede: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  direccion: string;
 
   @property({
     type: 'string',
@@ -19,28 +25,16 @@ export class Plan extends Entity {
     type: 'string',
     required: true,
   })
-  detalles: string;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  mensualidad: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  cantidad_beneficiarios: number;
+  cantidad_salas: string;
 
 
-  constructor(data?: Partial<Plan>) {
+  constructor(data?: Partial<Sede>) {
     super(data);
   }
 }
 
-export interface PlanRelations {
+export interface SedeRelations {
   // describe navigational properties here
 }
 
-export type PlanWithRelations = Plan & PlanRelations;
+export type SedeWithRelations = Sede & SedeRelations;

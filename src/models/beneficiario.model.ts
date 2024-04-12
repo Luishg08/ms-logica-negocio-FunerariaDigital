@@ -7,7 +7,7 @@ export class Beneficiario extends Entity {
     id: true,
     generated: true,
   })
-  id_beneficiario?: number;
+  id_beneficiario: number;
 
   @property({
     type: 'date',

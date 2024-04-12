@@ -7,7 +7,7 @@ export class Resena extends Entity {
     id: true,
     generated: true,
   })
-  idResena?: number;
+  idResena: number;
 
   @property({
     type: 'date',

@@ -7,7 +7,7 @@ export class ServicioFunerario extends Entity {
     id: true,
     generated: true,
   })
-  id_servicio_funerario?: number;
+  id_servicio_funerario: number;
 
   @property({
     type: 'string',

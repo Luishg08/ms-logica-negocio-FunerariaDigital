@@ -7,7 +7,7 @@ export class Factura extends Entity {
     id: true,
     generated: true,
   })
-  idFactura?: number;
+  idFactura: number;
 
   @property({
     type: 'number',

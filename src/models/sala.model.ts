@@ -1,34 +1,34 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class EstadoBeneficiario extends Entity {
+export class Sala extends Entity {
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
-  id_estado: number;
+  idSala: number;
 
   @property({
     type: 'string',
     required: true,
   })
-  nombre: string;
+  numero_sala: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  detalles: string;
+  capacidad: string;
 
 
-  constructor(data?: Partial<EstadoBeneficiario>) {
+  constructor(data?: Partial<Sala>) {
     super(data);
   }
 }
 
-export interface EstadoBeneficiarioRelations {
+export interface SalaRelations {
   // describe navigational properties here
 }
 
-export type EstadoBeneficiarioWithRelations = EstadoBeneficiario & EstadoBeneficiarioRelations;
+export type SalaWithRelations = Sala & SalaRelations;
