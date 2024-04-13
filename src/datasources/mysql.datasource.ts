@@ -6,11 +6,11 @@ const config = {
   name: 'mysql',
   connector: 'mysql',
   url: '',
-  host: process.env.SERVER_MYSQL_AWS,
+  host: process.env["SERVER_MYSQL_AWS"],
   port: 3306,
-  user: process.env.USER_MYSQL_AWS,
-  password: process.env.PASSWORD_MYSQL_AWS,
-  database: process.env.DATABASE_MYSQL_AWS
+  user: process.env["USER_MYSQL_AWS"],
+  password: process.env["PASSWORD_MYSQL_AWS"],
+  database: process.env["DATABASE_MYSQL_AWS"]
 };
 
 // Observe application's life cycle to disconnect the datasource when
