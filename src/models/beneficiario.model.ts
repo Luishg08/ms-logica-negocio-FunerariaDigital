@@ -1,13 +1,19 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Plan extends Entity {
+export class Beneficiario extends Entity {
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
-  id?: number;
+  id_beneficiario: number;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  fecha_registro: string;
 
   @property({
     type: 'string',
@@ -19,28 +25,28 @@ export class Plan extends Entity {
     type: 'string',
     required: true,
   })
-  detalles: string;
+  apellido: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  mensualidad: number;
+  documento: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  cantidad_beneficiarios: number;
+  celular?: string;
 
 
-  constructor(data?: Partial<Plan>) {
+  constructor(data?: Partial<Beneficiario>) {
     super(data);
   }
 }
 
-export interface PlanRelations {
+export interface BeneficiarioRelations {
   // describe navigational properties here
 }
 
-export type PlanWithRelations = Plan & PlanRelations;
+export type BeneficiarioWithRelations = Beneficiario & BeneficiarioRelations;

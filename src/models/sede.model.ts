@@ -1,13 +1,19 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class ServicioPlan extends Entity {
+export class Sede extends Entity {
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
-  id?: number;
+  idSede: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  direccion: string;
 
   @property({
     type: 'string',
@@ -19,16 +25,16 @@ export class ServicioPlan extends Entity {
     type: 'string',
     required: true,
   })
-  detalles: string;
+  cantidad_salas: string;
 
 
-  constructor(data?: Partial<ServicioPlan>) {
+  constructor(data?: Partial<Sede>) {
     super(data);
   }
 }
 
-export interface ServicioPlanRelations {
+export interface SedeRelations {
   // describe navigational properties here
 }
 
-export type ServicioPlanWithRelations = ServicioPlan & ServicioPlanRelations;
+export type SedeWithRelations = Sede & SedeRelations;
