@@ -9,6 +9,15 @@ export class PlanServicioPlan extends Entity {
   })
   idServicioPlan?: number;
 
+  @property({
+    type: 'number',
+  })
+  planId?: number;
+
+  @property({
+    type: 'number',
+  })
+  servicioPlanId?: number;
 
   constructor(data?: Partial<PlanServicioPlan>) {
     super(data);
