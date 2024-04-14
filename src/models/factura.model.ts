@@ -21,6 +21,10 @@ export class Factura extends Entity {
   })
   fechaFacturacion: string;
 
+  @property({
+    type: 'number',
+  })
+  pagoId?: number;
 
   constructor(data?: Partial<Factura>) {
     super(data);
