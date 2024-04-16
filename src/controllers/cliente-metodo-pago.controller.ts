@@ -5,7 +5,7 @@ import {
   repository,
   Where,
 } from '@loopback/repository';
-  import {
+import {
   del,
   get,
   getModelSchemaRef,
@@ -16,9 +16,8 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-Cliente,
-MetodoPagoCliente,
-MetodoPago,
+  Cliente,
+  MetodoPago
 } from '../models';
 import {ClienteRepository} from '../repositories';
 
