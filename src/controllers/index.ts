@@ -31,3 +31,7 @@ export * from './plan-servicio-plan.controller';
 export * from './plan-service-plan.controller';
 export * from './servicio-plan.controller';
 export * from './metodo-pago-cliente.controller';
+export * from './beneficiario.controller';
+export * from './cliente.controller';
+export * from './estado-beneficiario.controller';
+export * from './servicio-funerario.controller';
