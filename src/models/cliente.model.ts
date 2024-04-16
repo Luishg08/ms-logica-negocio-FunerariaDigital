@@ -3,6 +3,7 @@ import {MetodoPago} from './metodo-pago.model';
 import {MetodoPagoCliente} from './metodo-pago-cliente.model';
 import {Plan} from './plan.model';
 import {ClientePlan} from './cliente-plan.model';
+import {Beneficiario} from './beneficiario.model';
 
 @model()
 export class Cliente extends Entity {
@@ -60,6 +61,9 @@ export class Cliente extends Entity {
 
   @hasMany(() => Plan, {through: {model: () => ClientePlan}})
   plans: Plan[];
+
+  @hasMany(() => Beneficiario)
+  beneficiarios: Beneficiario[];
 
   constructor(data?: Partial<Cliente>) {
     super(data);

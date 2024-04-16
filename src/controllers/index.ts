@@ -10,3 +10,7 @@ export * from './cliente-plan.controller';
 export * from './plan-cliente.controller';
 export * from './plan-servicio-plan.controller';
 export * from './servicio-plan-plan.controller';
+export * from './cliente-beneficiario.controller';
+export * from './beneficiario-estado-beneficiario.controller';
+export * from './beneficiario-servicio-funerario.controller';
+export * from './resena-servicio-funerario.controller';

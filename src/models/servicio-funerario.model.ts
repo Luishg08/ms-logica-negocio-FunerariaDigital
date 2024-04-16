@@ -61,6 +61,11 @@ export class ServicioFunerario extends Entity {
   @belongsTo(() => Sala)
   salaId: number;
 
+  @property({
+    type: 'number',
+  })
+  beneficiarioId?: number;
+
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);
   }
