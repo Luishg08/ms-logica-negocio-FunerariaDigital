@@ -30,3 +30,4 @@ export * from './plan.controller';
 export * from './plan-servicio-plan.controller';
 export * from './plan-service-plan.controller';
 export * from './servicio-plan.controller';
+export * from './metodo-pago-cliente.controller';
