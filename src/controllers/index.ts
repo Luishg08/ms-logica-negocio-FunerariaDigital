@@ -35,3 +35,7 @@ export * from './beneficiario.controller';
 export * from './cliente.controller';
 export * from './estado-beneficiario.controller';
 export * from './servicio-funerario.controller';
+export * from './departamento.controller';
+export * from './ciudad.controller';
+export * from './sala.controller';
+export * from './sede.controller';
