@@ -4,7 +4,16 @@ import {ClientePlan} from './cliente-plan.model';
 import {ServicioPlan} from './servicio-plan.model';
 import {PlanServicioPlan} from './plan-servicio-plan.model';
 
-@model()
+@model(/*{
+  settings: {
+    foreignKeys: {
+      fk_plan_id: {
+        name: 'fk_plan_id',
+        entity: 'Plan'
+      }
+    }
+  }
+}*/)
 export class Plan extends Entity {
   @property({
     type: 'number',
