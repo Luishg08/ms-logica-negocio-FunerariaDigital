@@ -61,7 +61,7 @@ export class BeneficiarioEstadoBeneficiarioController {
           schema: getModelSchemaRef(EstadoBeneficiario, {
             title: 'NewEstadoBeneficiarioInBeneficiario',
             exclude: ['id_estado'],
-            optional: ['beneficiarioId']
+            optional: ['id_estado']
           }),
         },
       },

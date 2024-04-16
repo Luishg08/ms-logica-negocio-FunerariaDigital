@@ -37,7 +37,7 @@ export class PagoController {
         'application/json': {
           schema: getModelSchemaRef(Pago, {
             title: 'NewPago',
-            exclude: ['id'],
+            exclude: ['idPago'],
           }),
         },
       },

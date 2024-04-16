@@ -37,7 +37,7 @@ export class ResenaController {
         'application/json': {
           schema: getModelSchemaRef(Resena, {
             title: 'NewResena',
-            exclude: ['id'],
+            exclude: ['idResena'],
           }),
         },
       },

@@ -37,7 +37,7 @@ export class MetodoPagoController {
         'application/json': {
           schema: getModelSchemaRef(MetodoPago, {
             title: 'NewMetodoPago',
-            exclude: ['id'],
+            exclude: ['idMetodoPago'],
           }),
         },
       },

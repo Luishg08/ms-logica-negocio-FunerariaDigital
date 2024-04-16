@@ -37,7 +37,7 @@ export class FacturaController {
         'application/json': {
           schema: getModelSchemaRef(Factura, {
             title: 'NewFactura',
-            exclude: ['id'],
+            exclude: ['idFactura'],
           }),
         },
       },
