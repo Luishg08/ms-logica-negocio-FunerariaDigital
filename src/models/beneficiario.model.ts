@@ -46,11 +46,11 @@ export class Beneficiario extends Entity {
   })
   clienteId?: number;
 
-  @belongsTo(() => EstadoBeneficiario)
-  estadoBeneficiario: EstadoBeneficiario;
-
   @hasMany(() => ServicioFunerario)
   servicioFunerarios: ServicioFunerario[];
+
+  @belongsTo(() => EstadoBeneficiario, {name: 'estadoDeBeneficiario'})
+  id_estado: number;
 
   constructor(data?: Partial<Beneficiario>) {
     super(data);

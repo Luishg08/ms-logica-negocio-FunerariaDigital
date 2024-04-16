@@ -1,5 +1,5 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasOneRepositoryFactory, HasManyRepositoryFactory} from '@loopback/repository';
+import {DefaultCrudRepository, repository, HasManyRepositoryFactory, BelongsToAccessor} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
 import {Beneficiario, BeneficiarioRelations, EstadoBeneficiario, ServicioFunerario} from '../models';
 import {EstadoBeneficiarioRepository} from './estado-beneficiario.repository';
@@ -11,17 +11,18 @@ export class BeneficiarioRepository extends DefaultCrudRepository<
   BeneficiarioRelations
 > {
 
-  public readonly estadoBeneficiario: HasOneRepositoryFactory<EstadoBeneficiario, typeof Beneficiario.prototype.id_beneficiario>;
-
   public readonly servicioFunerarios: HasManyRepositoryFactory<ServicioFunerario, typeof Beneficiario.prototype.id_beneficiario>;
+
+  public readonly estadoDeBeneficiario: BelongsToAccessor<EstadoBeneficiario, typeof Beneficiario.prototype.id_beneficiario>;
 
   constructor(
     @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('EstadoBeneficiarioRepository') protected estadoBeneficiarioRepositoryGetter: Getter<EstadoBeneficiarioRepository>, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>,
   ) {
     super(Beneficiario, dataSource);
+    this.estadoDeBeneficiario = this.createBelongsToAccessorFor('estadoDeBeneficiario', estadoBeneficiarioRepositoryGetter,);
+    this.registerInclusionResolver('estadoDeBeneficiario', this.estadoDeBeneficiario.inclusionResolver);
     this.servicioFunerarios = this.createHasManyRepositoryFactoryFor('servicioFunerarios', servicioFunerarioRepositoryGetter,);
     this.registerInclusionResolver('servicioFunerarios', this.servicioFunerarios.inclusionResolver);
-    this.estadoBeneficiario = this.createHasOneRepositoryFactoryFor('estadoBeneficiario', estadoBeneficiarioRepositoryGetter);
-    this.registerInclusionResolver('estadoBeneficiario', this.estadoBeneficiario.inclusionResolver);
+
   }
 }
