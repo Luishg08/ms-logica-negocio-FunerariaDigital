@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,25 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Cliente} from '../models';
 import {ClienteRepository} from '../repositories';
 
 export class ClienteController {
   constructor(
     @repository(ClienteRepository)
-    public clienteRepository : ClienteRepository,
-  ) {}
+    public clienteRepository: ClienteRepository,
+  ) { }
 
   @post('/cliente')
   @response(200, {
@@ -58,6 +60,11 @@ export class ClienteController {
     return this.clienteRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClienteId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/cliente')
   @response(200, {
     description: 'Array of Cliente model instances',

@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,31 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Beneficiario} from '../models';
 import {BeneficiarioRepository} from '../repositories';
 
 export class BeneficiarioController {
   constructor(
     @repository(BeneficiarioRepository)
-    public beneficiarioRepository : BeneficiarioRepository,
-  ) {}
+    public beneficiarioRepository: BeneficiarioRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.guardarAccion]
+
+  })
   @post('/beneficiario')
   @response(200, {
     description: 'Beneficiario model instance',
@@ -47,6 +54,11 @@ export class BeneficiarioController {
     return this.beneficiarioRepository.create(beneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/beneficiario/count')
   @response(200, {
     description: 'Beneficiario model count',
@@ -58,6 +70,11 @@ export class BeneficiarioController {
     return this.beneficiarioRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/beneficiario')
   @response(200, {
     description: 'Array of Beneficiario model instances',
@@ -75,7 +92,11 @@ export class BeneficiarioController {
   ): Promise<Beneficiario[]> {
     return this.beneficiarioRepository.find(filter);
   }
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.editarAccion]
 
+  })
   @patch('/beneficiario')
   @response(200, {
     description: 'Beneficiario PATCH success count',
@@ -95,6 +116,11 @@ export class BeneficiarioController {
     return this.beneficiarioRepository.updateAll(beneficiario, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/beneficiario/{id}')
   @response(200, {
     description: 'Beneficiario model instance',
@@ -111,6 +137,11 @@ export class BeneficiarioController {
     return this.beneficiarioRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+
+  })
   @patch('/beneficiario/{id}')
   @response(204, {
     description: 'Beneficiario PATCH success',
@@ -129,6 +160,11 @@ export class BeneficiarioController {
     await this.beneficiarioRepository.updateById(id, beneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+
+  })
   @put('/beneficiario/{id}')
   @response(204, {
     description: 'Beneficiario PUT success',
@@ -140,6 +176,11 @@ export class BeneficiarioController {
     await this.beneficiarioRepository.replaceById(id, beneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
   @del('/beneficiario/{id}')
   @response(204, {
     description: 'Beneficiario DELETE success',

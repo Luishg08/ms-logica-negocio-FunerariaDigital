@@ -1,9 +1,9 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {MetodoPago} from './metodo-pago.model';
-import {MetodoPagoCliente} from './metodo-pago-cliente.model';
-import {Plan} from './plan.model';
-import {ClientePlan} from './cliente-plan.model';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Beneficiario} from './beneficiario.model';
+import {ClientePlan} from './cliente-plan.model';
+import {MetodoPagoCliente} from './metodo-pago-cliente.model';
+import {MetodoPago} from './metodo-pago.model';
+import {Plan} from './plan.model';
 
 @model()
 export class Cliente extends Entity {
@@ -39,10 +39,10 @@ export class Cliente extends Entity {
   estado_cliente: boolean;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  id_usuario: number;
+  id_usuario: string;
 
   @property({
     type: 'string',

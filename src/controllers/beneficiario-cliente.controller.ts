@@ -18,6 +18,7 @@ export class BeneficiarioClienteController {
     public beneficiarioRepository: BeneficiarioRepository,
   ) { }
 
+  
   @get('/beneficiarios/{id}/cliente', {
     responses: {
       '200': {
