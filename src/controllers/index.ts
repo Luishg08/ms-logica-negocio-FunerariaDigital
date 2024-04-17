@@ -40,3 +40,4 @@ export * from './sala.controller';
 export * from './sede.controller';
 export * from './beneficiario-estado-beneficiario.controller';
 export * from './servicio-funerario-beneficiario.controller';
+export * from './beneficiario-cliente.controller';

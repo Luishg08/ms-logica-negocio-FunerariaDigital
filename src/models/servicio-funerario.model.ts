@@ -7,7 +7,7 @@ import {Sala} from './sala.model';
     foreignKeys: [
       {
         fk_servicioFunerario_BeneficiarioId: {
-          name: 'k_servicioFunerario_BeneficiarioId',
+          name: 'fk_servicioFunerario_BeneficiarioId',
           entity: 'Beneficiario',
           entityKey: 'id_beneficiario',
           foreignKey: 'id_beneficiario'
