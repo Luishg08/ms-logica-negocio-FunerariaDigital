@@ -3,32 +3,26 @@ import {Cliente} from './cliente.model';
 import {EstadoBeneficiario} from './estado-beneficiario.model';
 import {ServicioFunerario} from './servicio-funerario.model';
 
-@model({
-  settings: {
-    foreignKeys: [
-      {
-        fk_beneficiario_estadoBeneficiarioId: {
-          name: 'fk_beneficiario_estadoBeneficiarioId',
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_beneficiario_estado: {
+          name: 'fk_beneficiario_estado',
           entity: 'EstadoBeneficiario',
           entityKey: 'id_estado',
-          foreignKey: 'id_estado'
+          foreignKey: 'estadoId',
         },
-        fk_beneficiario_ClienteId: {
-          name: 'fk_beneficiario_ClienteId',
+        fk_beneficiario_cliente: {
+          name: 'fk_beneficiario_cliente',
           entity: 'Cliente',
           entityKey: 'id_cliente',
-          foreignKey: 'id_cliente'
+          foreignKey: 'clienteId',
         },
-        fk_beneficiario_ServicioFunerarioId: {
-          name: 'fk_beneficiario_ClienteId',
-          entity: 'ServicioFunerario',
-          entityKey: 'id_servicioFunerario',
-          foreignKey: 'servicioFunerarios'
-        }
-      }
-    ]
+      },
+    },
   }
-})
+)
 export class Beneficiario extends Entity {
   @property({
     type: 'number',
@@ -71,10 +65,10 @@ export class Beneficiario extends Entity {
   servicioFunerarios: ServicioFunerario[];
 
   @belongsTo(() => EstadoBeneficiario, {name: 'estadoDeBeneficiario'})
-  id_estado: number;
+  estadoId: number;
 
   @belongsTo(() => Cliente, {name: 'clienteBeneficiario'})
-  id_cliente: number;
+  clienteId: number;
 
   constructor(data?: Partial<Beneficiario>) {
     super(data);

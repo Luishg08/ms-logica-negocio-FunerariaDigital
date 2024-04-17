@@ -1,20 +1,20 @@
 import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {ServicioFunerario} from './servicio-funerario.model';
 
-@model({
-  settings: {
-    foreignKeys: [
-      {
-        fk_reseña_servicioFunerarioId: {
-          name: 'fk_reseña_servicioFunerarioId',
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_resena_servicio_funerario: {
+          name: 'fk_resena_servicio_funerario',
           entity: 'ServicioFunerario',
           entityKey: 'id_servicio_funerario',
-          foreignKey: 'servicioFunerarioId'
-        }
-      }
-    ]
+          foreignKey: 'servicioFunerarioId',
+        },
+      },
+    },
   }
-})
+)
 export class Resena extends Entity {
   @property({
     type: 'number',

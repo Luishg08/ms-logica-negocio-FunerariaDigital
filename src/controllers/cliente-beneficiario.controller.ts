@@ -16,8 +16,8 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-  Cliente,
   Beneficiario,
+  Cliente,
 } from '../models';
 import {ClienteRepository} from '../repositories';
 

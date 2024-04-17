@@ -1,28 +1,26 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Pago} from './pago.model';
 
-@model({
-  settings: {
-    foreignKeys: [
-      {
-        fk_metodoPagoCliente_clienteId: {
-          name: 'fk_metodoPagoCliente_clienteId',
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_cliente_id: {
+          name: 'fk_cliente_id',
           entity: 'Cliente',
-          entityKey: 'idCliente',
-          foreignKey: 'clienteId'
-        }
-      },
-      {
-        fk_metodoPagoCliente_metodoPagoId: {
-          name: 'fk_metodoPagoCliente_metodoPagoId',
+          entityKey: 'id_cliente',
+          foreignKey: 'clienteId',
+        },
+        fk_metodo_pago_id: {
+          name: 'fk_metodo_pago_id',
           entity: 'MetodoPago',
           entityKey: 'idMetodoPago',
-          foreignKey: 'metodoPagoId'
-        }
-      }
-    ]
-  }
-})
+          foreignKey: 'metodoPagoId',
+        },
+      },
+    },
+  },
+)
 export class MetodoPagoCliente extends Entity {
   @property({
     type: 'number',

@@ -2,16 +2,20 @@ import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository'
 import {Departamento} from './departamento.model';
 import {Sede} from './sede.model';
 
-@model({
-  settings:{
-    fk_ciudad_idDepartamento:{
-      name: 'fk_ciudad_idDepartamento',
-      entity: 'Departamento',
-      entityKey: 'idDepartamento',
-      foreignKey: 'departamentoId'
-    }
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_ciudad_departamento: {
+          name: 'fk_ciudad_departamento',
+          entity: 'Departamento',
+          entityKey: 'idDepartamento',
+          foreignKey: 'departamentoId',
+        },
+      },
+    },
   }
-})
+)
 export class Ciudad extends Entity {
   @property({
     type: 'number',

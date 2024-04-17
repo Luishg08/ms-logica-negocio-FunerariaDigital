@@ -2,20 +2,26 @@ import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {Beneficiario} from './beneficiario.model';
 import {Sala} from './sala.model';
 
-@model({
-  settings: {
-    foreignKeys: [
-      {
-        fk_servicioFunerario_BeneficiarioId: {
-          name: 'fk_servicioFunerario_BeneficiarioId',
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_servicio_funerario_beneficiario: {
+          name: 'fk_servicio_funerario_beneficiario',
           entity: 'Beneficiario',
           entityKey: 'id_beneficiario',
-          foreignKey: 'id_beneficiario'
-        }
-      }
-    ]
+          foreignKey: 'beneficiarioId',
+        },
+        fk_servicio_funerario_sala: {
+          name: 'fk_servicio_funerario_sala',
+          entity: 'Sala',
+          entityKey: 'idSala',
+          foreignKey: 'salaId',
+        },
+      },
+    },
   }
-})
+)
 export class ServicioFunerario extends Entity {
   @property({
     type: 'number',
@@ -76,7 +82,7 @@ export class ServicioFunerario extends Entity {
   salaId: number;
 
   @belongsTo(() => Beneficiario, {name: 'servicioFunerarioBeneficiario'})
-  id_beneficiario: number;
+  beneficiarioId: number;
 
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);

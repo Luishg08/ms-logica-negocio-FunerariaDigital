@@ -2,27 +2,21 @@ import {belongsTo, Entity, hasOne, model, property} from '@loopback/repository';
 import {Factura} from './factura.model';
 import {MetodoPagoCliente} from './metodo-pago-cliente.model';
 
-@model({
-  settings: {
-    foreignKeys: [
-      {
-        fk_pago_metodoPagoClienteId: {
-          name: 'fk_pago_metodoPagoClienteId',
+@model(
+  {
+    settings: {
+      foreignKeys: {
+        fk_metodoPagoCliente_id: {
+          name: 'fk_metodoPagoCliente_id',
           entity: 'MetodoPagoCliente',
           entityKey: 'idMetodoPagoCliente',
-          foreignKey: 'metodoPagoClienteId'
+          foreignKey: 'metodoPagoClienteId',
         },
+      },
+    },
+  },
 
-        fk_pago_facturaId: {
-          name: 'fk_pago_facturaId',
-          entity: 'Factura',
-          entityKey: 'idFactura',
-          foreignKey: 'facturaId'
-        }
-      }
-    ]
-  }
-})
+)
 export class Pago extends Entity {
   @property({
     type: 'number',
@@ -37,6 +31,7 @@ export class Pago extends Entity {
     required: true,
   })
   fechaPago: string;
+
 
   @belongsTo(() => MetodoPagoCliente)
   metodoPagoClienteId: number;
