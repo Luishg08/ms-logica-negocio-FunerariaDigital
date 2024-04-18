@@ -83,6 +83,9 @@ export class ClienteController {
     return this.clienteRepository.find(filter);
   }
 
+
+
+
   @patch('/cliente')
   @response(200, {
     description: 'Cliente PATCH success count',

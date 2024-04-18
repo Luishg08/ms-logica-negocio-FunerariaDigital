@@ -19,6 +19,7 @@ import {Sala} from './sala.model';
           foreignKey: 'salaId',
         },
       },
+      strict: false
     },
   }
 )
@@ -49,13 +50,13 @@ export class ServicioFunerario extends Entity {
   servicio_traslado: boolean;
 
   @property({
-    type: 'date',
+    type: 'string',
     required: true,
   })
   fecha_hora_ingreso: string;
 
   @property({
-    type: 'date',
+    type: 'string',
     required: true,
   })
   fecha_hora_salida: string;
