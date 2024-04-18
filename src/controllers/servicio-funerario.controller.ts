@@ -78,8 +78,13 @@ export class ServicioFunerarioController {
               let datosCorreo = {
                 correoDestino: beneficiario.clienteBeneficiario.correo,
                 nombreDestino: beneficiario.clienteBeneficiario.primerNombre + " " + beneficiario.clienteBeneficiario.primerApellido,
-                contenidoCorreo: `${codigo_unico}`,
                 asuntoCorreo: ConfiguracionNotificaciones.asuntoCodigoServicioFunerario,
+                sala: sala.numero_sala,
+                fechaServicio: datos.fecha_hora_ingreso + " a " + datos.fecha_hora_salida,
+                horarioServicio: datos.fecha_hora_ingreso + " a " + datos.fecha_hora_salida,
+                sede: sala.sede.nombre,
+                nombreUsuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
+                ciudad: sala.sede.ciudad.nombre,
               };
               this.servicioNotificaciones.EnviarNotificacion(datosCorreo, url);
 
