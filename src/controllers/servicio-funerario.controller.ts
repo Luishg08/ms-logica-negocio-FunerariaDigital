@@ -20,8 +20,9 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
-import {ServicioFunerario} from '../models';
+import {CredencialesVerificarEstadoCliente, ServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {ClientePlanService} from '../services';
 import {NotificacionesService} from '../services/notificaciones.service';
 import {ServicioFunerarioService} from '../services/servicio-funerario.service';
 
@@ -38,7 +39,9 @@ export class ServicioFunerarioController {
     @service(ServicioFunerarioService)
     public servicioFunerarioService: ServicioFunerarioService,
     @service(NotificacionesService)
-    public servicioNotificaciones: NotificacionesService
+    public servicioNotificaciones: NotificacionesService,
+    @service(ClientePlanService)
+    public servicioClientePlan: ClientePlanService
   ) { }
 
   @post('/solicitar-servicio')
@@ -164,6 +167,39 @@ export class ServicioFunerarioController {
   ): Promise<Count> {
     return this.servicioFunerarioRepository.count(where);
   }
+
+  @get('/servicio-funerario-resenas')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async reseñas(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.servicioClientePlan.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let serviciosFunerarios = await this.servicioFunerarioService.ObtenerReseñasConServiciosFunerarios(cliente.id_cliente);
+      if (serviciosFunerarios) {
+        return serviciosFunerarios;
+      }
+      else {
+        return []
+      }
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado ")
+    }
+  }
+
 
   @get('/servicio-funerario')
   @response(200, {

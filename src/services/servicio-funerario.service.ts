@@ -1,6 +1,6 @@
 import {BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {BeneficiarioRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {BeneficiarioRepository, ResenaRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
 const generator = require('generate-password');
 
 @injectable({scope: BindingScope.TRANSIENT})
@@ -11,6 +11,8 @@ export class ServicioFunerarioService {
     public servicioFunerarioRepository: ServicioFunerarioRepository,
     @repository(SalaRepository)
     public salaRepository: SalaRepository,
+    @repository(ResenaRepository)
+    public resenaRepository: ResenaRepository
   ) { }
 
   /*
@@ -74,6 +76,34 @@ export class ServicioFunerarioService {
     }
     catch (error) {
       return null;
+    }
+  }
+
+  async ObtenerReseñasConServiciosFunerarios(idCliente: number): Promise<any[] | null> {
+    try {
+      let reseñasDeMisServicios: any[] = await this.resenaRepository.find({
+        include: [{
+          relation: 'servicioFunerario',
+          scope: {
+            include: [{
+              relation: 'servicioFunerarioBeneficiario',
+              scope: {
+                where: {
+                  clienteId: idCliente
+                }
+              }
+            }]
+
+          }
+        }]
+      })
+      console.log(reseñasDeMisServicios);
+      reseñasDeMisServicios = reseñasDeMisServicios.filter((resena) => resena.servicioFunerario.servicioFunerarioBeneficiario != undefined)
+      return reseñasDeMisServicios
+    } catch (error) {
+      console.log(error);
+
+      return null
     }
   }
 }
