@@ -72,19 +72,32 @@ export class ServicioFunerarioController {
                 datos.servicio_traslado = true;
               }
               let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(8);
+              let url1 = ConfiguracionNotificaciones.urlNotificacionCodigoServicioFunerario;
+              let datosCorreo1 = {
+                correoDestino: beneficiario.clienteBeneficiario.correo,
+                nombreDestino: beneficiario.clienteBeneficiario.primerNombre + " " + beneficiario.clienteBeneficiario.primerApellido,
+                asuntoCorreo: ConfiguracionNotificaciones.asuntoCodigoServicioFunerario,
+                codigoUnico: codigo_unico,
+                usuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
+              };
+              this.servicioNotificaciones.EnviarNotificacion(datosCorreo1, url1);
+
               let url = ConfiguracionNotificaciones.urlNotificacionServicioFunerario;
 
               // Envío de código único del servicio generado al correo electrónico del cliente
               let datosCorreo = {
                 correoDestino: beneficiario.clienteBeneficiario.correo,
                 nombreDestino: beneficiario.clienteBeneficiario.primerNombre + " " + beneficiario.clienteBeneficiario.primerApellido,
-                asuntoCorreo: ConfiguracionNotificaciones.asuntoCodigoServicioFunerario,
+                asuntoCorreo: ConfiguracionNotificaciones.asuntoServicioFunerario,
                 sala: sala.numero_sala,
-                fechaServicio: datos.fecha_hora_ingreso + " a " + datos.fecha_hora_salida,
-                horarioServicio: datos.fecha_hora_ingreso + " a " + datos.fecha_hora_salida,
+                fechaIngreso: datos.fecha_hora_ingreso,
+                fechaSalida: datos.fecha_hora_salida,
                 sede: sala.sede.nombre,
                 nombreUsuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
                 ciudad: sala.sede.ciudad.nombre,
+                ubicacionCuerpo: datos.ubicacion_cuerpo,
+                beneficiario: beneficiario.nombre + " " + beneficiario.apellido,
+                tipoSepultura: datos.tipo_sepultura
               };
               this.servicioNotificaciones.EnviarNotificacion(datosCorreo, url);
 
@@ -99,8 +112,8 @@ export class ServicioFunerarioController {
               servicioFunerario.tipo_sepultura = datos.tipo_sepultura;
               servicioFunerario.salaId = datos.salaId;
               servicioFunerario.ubicacion_cuerpo = datos.ubicacion_cuerpo;
-              this.servicioFunerarioRepository.create(servicioFunerario);
-
+              return this.servicioFunerarioRepository.create(servicioFunerario);
+              ;
 
             } else {
               return new HttpErrors[401]("La sala no existe");
@@ -118,158 +131,6 @@ export class ServicioFunerarioController {
       return new HttpErrors[401]("El beneficiario no existe");
     }
 
-
-
-    /**
-     *
-     * await customerRepository.find({
-      include: [
-        {
-          relation: 'orders',
-          scope: {
-            include: [{relation: 'shipment'}],
-          },
-        },
-      ],
-    });
-
-    console.log("Este es el beneficiario:", beneficiario);
-
-    if (beneficiario) {
-      if (beneficiario.estadoDeBeneficiario.nombre === "activo") {
-        if (beneficiario.clienteBeneficiario.estado_cliente === true) {
-          console.log("Todo ok con estados de beneficiario y cliente")
-          let sala: any = await this.salaRepository.findById(datos.salaId, {
-            include: [
-              {
-                relation: 'Sede',
-                scope: {
-                  include: [{relation: 'Ciudad'}],
-                },
-              },
-            ],
-          });
-          console.log("Esta es la sala:", sala);
-          if (sala) {
-            let servicioYaCreado = await this.servicioFunerarioRepository.findOne({
-              where: {
-                salaId: datos.salaId,
-                fecha_hora_ingreso: datos.fecha_hora_ingreso,
-                fecha_hora_salida: datos.fecha_hora_salida
-              }
-            })
-            if (servicioYaCreado) {
-              return new HttpErrors[401]("La fecha y hora seleccionada no está disponible para la sala seleccionada, ingrese otro horario o seleccione otra sala");
-            }
-            else {
-              let ciudad = sala.Sede.Ciudad.nombre;
-              let traslado = true;
-              console.log("Esta es la ciudad ingresada:", datos.ubicacion_cuerpo);
-              console.log("Esta es la ciudad de la sede:", sala.Sede.Ciudad.nombre);
-
-              if (ciudad === datos.ubicacion_cuerpo) {
-                traslado = false;
-              }
-              console.log("Este es el traslado:", traslado);
-              let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(5);
-              console.log("Este es el código único:", codigo_unico);
-
-              let servicioFunerario: ServicioFunerario = new ServicioFunerario;
-              servicioFunerario.beneficiarioId = datos.beneficiarioId;
-              servicioFunerario.codigo_unico = codigo_unico;
-              servicioFunerario.estado_codigo_unico = true;
-              servicioFunerario.notificado = true;
-              servicioFunerario.fecha_hora_ingreso = datos.fecha_hora_ingreso;
-              servicioFunerario.fecha_hora_salida = datos.fecha_hora_salida;
-              servicioFunerario.servicio_traslado = traslado;
-              servicioFunerario.tipo_sepultura = datos.tipo_sepultura;
-              servicioFunerario.salaId = datos.salaId;
-              this.servicioFunerarioRepository.create(servicioFunerario)
-              console.log("Este es el servicio funerario:", servicioFunerario);
-
-
-            }
-          } else {
-            return new HttpErrors[401]("La sala no existe");
-          }
-        }
-        else {
-          return new HttpErrors[401]("El Cliente no ha adquirido un plan");
-        }
-      }
-      else {
-        return new HttpErrors[401]("El beneficiario no se encuentra activo");
-      }
-    }
-    else {
-      return new HttpErrors[401]("El beneficiario no existe");
-    }
-
-
-    /*
-      //Comprobar si el cliente tiene un plan o esta activo
-      if (cliente.estado_cliente) {
-        //Obtener el beneficiario con el idBeneficiario recibido
-        //let beneficiario = this.beneficiarioRepository.findById(credenciales.idBeneficiario)
-        //Comprobar si el beneficiario está activo
-        let estadoBeneficiario = this.estadoBeneficiarioRepository.findById(beneficiario.estadoId)
-        if (estadoBeneficiario.nombre === "activo") {
-          //Obtener la sala con el idSala recibido
-          let sala = this.salaRepository.findById(credenciales.idSala)
-          //Verificar en registros de serviciosFunerarios si existe uno que tenga el mismo horario
-          let servicioYaCreado = this.servicioFunerarioRepository.findOne({
-            where: {
-              salaId: credenciales.salaId,
-              fecha_hora_ingreso: credenciales.fecha_hora_ingreso,
-              fecha_hora_salida: credenciales.fecha_hora_salida
-            }
-          })
-          if (servicioYaCreado) {
-            return new HttpErrors[401]("La fecha y hora seleccionada no está disponible para la sala seleccionada, ingrese otro horario o seleccione otra sala");
-          }
-          else {
-            //Obtener sede de la sala
-            let sede = this.sedeRepository.findById(sala.sedeId)
-            //Obtener ciudad de la sede
-            let ciudad = this.ciudadRepository.findById(sede.ciudadId)
-            //Comparar ciudad obtenida con la ubicación del cuerpo
-            let traslado = true
-            if (ciudad.nombre === credenciales.ubicacion_cuerpo) {
-              //Asignar servicio de traslado true o false
-              traslado = false
-            }
-            //Generar el código único del servicioFunerario
-            let codigo_unico = this.servicioSeguridad.crearTextoAleatorio(5) //Crear la función y el servicio
-            //Enviarlo por correo electrónico al cliente
-            //... http/
-            //si la petición devuelve un OK
-            let estadoNotificado = true
-            //Consumir servicio de chat
-
-            //Generar un nuevo registro de servicioFunerario
-            let servicioFunerario: ServicioFunerario = new ServicioFunerario
-
-            servicioFunerario.beneficiarioId = credenciales.beneficiarioId
-            servicioFunerario.codigo_unico = codigo_unico
-            servicioFunerario.estado_codigo_unico = true
-            servicioFunerario.notificado = estadoNotificado
-            servicioFunerario.fecha_hora_ingreso
-            servicioFunerario.fecha_hora_salida
-            servicioFunerario.servicio_traslado = traslado
-            servicioFunerario.tipo_sepultura = credenciales.tipo_sepultura
-
-            return this.servicioFunerarioRepository.create(servicioFunerario)
-          }
-        }
-        else {
-          return new HttpErrors[401]("El beneficiario no se encuentra activo, agrégelo a su plan actual o adquiera uno nuevo");
-        }
-      }
-      else {
-        return new HttpErrors[401]("El cliente no se encuentra activo, debe adquirir un plan antes de proceder");
-      }
-      */
-    return new HttpErrors[401]("Credenciales incorrectas.");
   }
 
   @post('/servicio-funerario')

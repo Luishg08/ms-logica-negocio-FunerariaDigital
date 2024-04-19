@@ -44,12 +44,18 @@ export class ClientePlan extends Entity {
     type: 'date',
     required: true,
   })
-  fechaContrato: string;
+  fechaContrato: Date;
 
   @property({
     type: 'number',
   })
   clienteId?: number;
+
+  @property({
+    type: 'boolean',
+    required: true
+  })
+  estadoClientePlan: boolean;
 
   @property({
     type: 'number',
