@@ -117,6 +117,11 @@ export class FacturaController {
     return this.facturaRepository.updateAll(factura, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/factura/{id}')
   @response(200, {
     description: 'Factura model instance',
@@ -133,6 +138,10 @@ export class FacturaController {
     return this.facturaRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/factura/{id}')
   @response(204, {
     description: 'Factura PATCH success',
@@ -151,6 +160,10 @@ export class FacturaController {
     await this.facturaRepository.updateById(id, factura);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/factura/{id}')
   @response(204, {
     description: 'Factura PUT success',
@@ -162,6 +175,10 @@ export class FacturaController {
     await this.facturaRepository.replaceById(id, factura);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/factura/{id}')
   @response(204, {
     description: 'Factura DELETE success',

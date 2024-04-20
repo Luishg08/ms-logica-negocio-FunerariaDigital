@@ -21,17 +21,14 @@ import {
 } from '@loopback/rest';
 import {CredencialesResenarServicio, Resena} from '../models';
 import {ResenaRepository} from '../repositories';
-import {ClientePlanService, ResenaService} from '../services';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {authenticate} from '@loopback/authentication';
 
 export class ResenaController {
   constructor(
     @repository(ResenaRepository)
-    public resenaRepository: ResenaRepository,
-    @service(ResenaService)
-    public resenaService: ResenaService,
-    @service(ClientePlanService)
-    public clientePlanService: ClientePlanService
-  ) { }
+    public resenaRepository : ResenaRepository,
+  ) {}
 
   @post('/resena')
   @response(200, {
@@ -54,53 +51,6 @@ export class ResenaController {
     return this.resenaRepository.create(resena);
   }
 
-  @post('/resenar-servicio')
-  @response(200, {
-    description: 'Resena model instance',
-    content: {'application/json': {schema: getModelSchemaRef(CredencialesResenarServicio)}},
-  })
-  async reseñarServicio(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(CredencialesResenarServicio),
-        },
-      },
-    })
-    resena: Omit<CredencialesResenarServicio, 'idResena'>,
-  ): Promise<Object> {
-    let idCliente = await this.resenaService.ObtenerClientePorIdServicioFunerario(resena.servicioFunerarioId);
-    console.log(idCliente + "Este es el id del cliente");
-    if (!idCliente) {
-      return new HttpErrors[401]('No se encontró un cliente asociado al servicio funerario');
-    }
-    else {
-      let cliente: any = await this.clientePlanService.obtenerClienteConIdUsuario(resena.idUsuario);
-      if (!cliente) {
-        return new HttpErrors[401]('No se encontró un cliente asociado al usuario');
-      }
-      if (cliente.id_cliente != idCliente) {
-        return new HttpErrors[401]('El cliente no tiene permisos para reseñar este servicio funerario');
-      }
-      else {
-        let puedeReseñar: boolean = await this.resenaService.VerificarSiClienteYaPuedeResenar(resena.servicioFunerarioId);
-        if (!puedeReseñar) {
-          return new HttpErrors[401]('El cliente no puede reseñar este servicio funerario porque no ha pasado la fecha');
-        }
-        else {
-          let reseña = new Resena()
-          reseña.fechaResena = new Date();
-          reseña.calificacion = resena.calificacion;
-          reseña.comentario = resena.comentario;
-          reseña.servicioFunerarioId = resena.servicioFunerarioId;
-          return this.resenaRepository.create(reseña);
-        }
-      }
-    }
-
-  }
-
-
   @get('/resena/count')
   @response(200, {
     description: 'Resena model count',
@@ -111,6 +61,12 @@ export class ResenaController {
   ): Promise<Count> {
     return this.resenaRepository.count(where);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.listarAccion]
+
+  })
 
   @get('/resena')
   @response(200, {
@@ -129,6 +85,12 @@ export class ResenaController {
   ): Promise<Resena[]> {
     return this.resenaRepository.find(filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/resena')
   @response(200, {
@@ -149,6 +111,12 @@ export class ResenaController {
     return this.resenaRepository.updateAll(resena, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/resena/{id}')
   @response(200, {
     description: 'Resena model instance',
@@ -164,6 +132,12 @@ export class ResenaController {
   ): Promise<Resena> {
     return this.resenaRepository.findById(id, filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/resena/{id}')
   @response(204, {
@@ -183,6 +157,12 @@ export class ResenaController {
     await this.resenaRepository.updateById(id, resena);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+
   @put('/resena/{id}')
   @response(204, {
     description: 'Resena PUT success',
@@ -194,6 +174,10 @@ export class ResenaController {
     await this.resenaRepository.replaceById(id, resena);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/resena/{id}')
   @response(204, {
     description: 'Resena DELETE success',

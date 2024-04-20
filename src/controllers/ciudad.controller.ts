@@ -1,4 +1,4 @@
-import {authenticate} from '@loopback/authentication';
+import { authenticate } from '@loopback/authentication'; 
 import {
   Count,
   CountSchema,
@@ -33,6 +33,7 @@ export class CiudadController {
     options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.guardarAccion]
 
   })
+
   @post('/ciudad')
   @response(200, {
     description: 'Ciudad model instance',
@@ -54,6 +55,12 @@ export class CiudadController {
     return this.ciudadRepository.create(ciudad);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.listarAccion]
+
+  })
+  
   @get('/ciudad/count')
   @response(200, {
     description: 'Ciudad model count',
@@ -65,6 +72,11 @@ export class CiudadController {
     return this.ciudadRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/ciudad')
   @response(200, {
     description: 'Array of Ciudad model instances',
@@ -82,6 +94,12 @@ export class CiudadController {
   ): Promise<Ciudad[]> {
     return this.ciudadRepository.find(filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/ciudad')
   @response(200, {
@@ -102,6 +120,12 @@ export class CiudadController {
     return this.ciudadRepository.updateAll(ciudad, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/ciudad/{id}')
   @response(200, {
     description: 'Ciudad model instance',
@@ -117,6 +141,12 @@ export class CiudadController {
   ): Promise<Ciudad> {
     return this.ciudadRepository.findById(id, filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/ciudad/{id}')
   @response(204, {
@@ -136,6 +166,12 @@ export class CiudadController {
     await this.ciudadRepository.updateById(id, ciudad);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+
   @put('/ciudad/{id}')
   @response(204, {
     description: 'Ciudad PUT success',
@@ -146,6 +182,12 @@ export class CiudadController {
   ): Promise<void> {
     await this.ciudadRepository.replaceById(id, ciudad);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
 
   @del('/ciudad/{id}')
   @response(204, {

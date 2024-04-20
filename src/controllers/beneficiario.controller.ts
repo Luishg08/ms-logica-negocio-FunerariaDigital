@@ -31,7 +31,6 @@ export class BeneficiarioController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.guardarAccion]
-
   })
   @post('/beneficiario')
   @response(200, {
@@ -92,6 +91,7 @@ export class BeneficiarioController {
   ): Promise<Beneficiario[]> {
     return this.beneficiarioRepository.find(filter);
   }
+
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuBeneficiarioId, ConfiguracionSeguridad.editarAccion]

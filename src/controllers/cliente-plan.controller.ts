@@ -24,7 +24,9 @@ import {
   Plan
 } from '../models';
 import {ClienteRepository} from '../repositories';
-import {ClientePlanService} from '../services';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
+import { ClientePlanService } from '../services';
 
 export class ClientePlanController {
   constructor(
@@ -32,6 +34,12 @@ export class ClientePlanController {
     @service(ClientePlanService)
     public clientePlanService: ClientePlanService
   ) { }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClientePlanId, ConfiguracionSeguridad.listarAccion]
+
+  })
 
   @get('/clientes/{id}/plans', {
     responses: {
@@ -51,6 +59,12 @@ export class ClientePlanController {
   ): Promise<Plan[]> {
     return this.clienteRepository.plans(id).find(filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClientePlanId, ConfiguracionSeguridad.guardarAccion]
+
+  })
 
   @post('/clientes/{id}/plans', {
     responses: {
@@ -76,6 +90,12 @@ export class ClientePlanController {
     return this.clienteRepository.plans(id).create(plan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClientePlanId, ConfiguracionSeguridad.editarAccion]
+
+  })
+
   @patch('/clientes/{id}/plans', {
     responses: {
       '200': {
@@ -98,6 +118,12 @@ export class ClientePlanController {
   ): Promise<Count> {
     return this.clienteRepository.plans(id).patch(plan, where);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClientePlanId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
 
   @del('/clientes/{id}/plans', {
     responses: {

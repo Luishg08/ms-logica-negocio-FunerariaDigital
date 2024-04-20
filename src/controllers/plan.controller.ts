@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {Plan} from '../models';
 import {PlanRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class PlanController {
   constructor(
@@ -26,6 +28,10 @@ export class PlanController {
     public planRepository : PlanRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/plan')
   @response(200, {
     description: 'Plan model instance',
@@ -47,6 +53,10 @@ export class PlanController {
     return this.planRepository.create(plan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/plan/count')
   @response(200, {
     description: 'Plan model count',
@@ -58,6 +68,10 @@ export class PlanController {
     return this.planRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/plan')
   @response(200, {
     description: 'Array of Plan model instances',
@@ -76,6 +90,10 @@ export class PlanController {
     return this.planRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/plan')
   @response(200, {
     description: 'Plan PATCH success count',
@@ -95,6 +113,10 @@ export class PlanController {
     return this.planRepository.updateAll(plan, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/plan/{id}')
   @response(200, {
     description: 'Plan model instance',
@@ -111,6 +133,10 @@ export class PlanController {
     return this.planRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/plan/{id}')
   @response(204, {
     description: 'Plan PATCH success',
@@ -129,6 +155,10 @@ export class PlanController {
     await this.planRepository.updateById(id, plan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/plan/{id}')
   @response(204, {
     description: 'Plan PUT success',
@@ -140,6 +170,10 @@ export class PlanController {
     await this.planRepository.replaceById(id, plan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/plan/{id}')
   @response(204, {
     description: 'Plan DELETE success',

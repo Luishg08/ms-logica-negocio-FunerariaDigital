@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {Departamento} from '../models';
 import {DepartamentoRepository} from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class DepartamentoController {
   constructor(
@@ -26,6 +28,12 @@ export class DepartamentoController {
     public departamentoRepository : DepartamentoRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+  
   @post('/departamento')
   @response(200, {
     description: 'Departamento model instance',
@@ -47,6 +55,12 @@ export class DepartamentoController {
     return this.departamentoRepository.create(departamento);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/departamento/count')
   @response(200, {
     description: 'Departamento model count',
@@ -57,6 +71,12 @@ export class DepartamentoController {
   ): Promise<Count> {
     return this.departamentoRepository.count(where);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.listarAccion]
+
+  })
 
   @get('/departamento')
   @response(200, {
@@ -75,6 +95,11 @@ export class DepartamentoController {
   ): Promise<Departamento[]> {
     return this.departamentoRepository.find(filter);
   }
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/departamento')
   @response(200, {
@@ -95,6 +120,12 @@ export class DepartamentoController {
     return this.departamentoRepository.updateAll(departamento, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/departamento/{id}')
   @response(200, {
     description: 'Departamento model instance',
@@ -110,6 +141,12 @@ export class DepartamentoController {
   ): Promise<Departamento> {
     return this.departamentoRepository.findById(id, filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/departamento/{id}')
   @response(204, {
@@ -129,6 +166,12 @@ export class DepartamentoController {
     await this.departamentoRepository.updateById(id, departamento);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+
   @put('/departamento/{id}')
   @response(204, {
     description: 'Departamento PUT success',
@@ -139,6 +182,12 @@ export class DepartamentoController {
   ): Promise<void> {
     await this.departamentoRepository.replaceById(id, departamento);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
 
   @del('/departamento/{id}')
   @response(204, {

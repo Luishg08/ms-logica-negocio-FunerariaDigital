@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {Sede} from '../models';
 import {SedeRepository} from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class SedeController {
   constructor(
@@ -26,6 +28,11 @@ export class SedeController {
     public sedeRepository : SedeRepository,
   ) {}
 
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/sede')
   @response(200, {
     description: 'Sede model instance',
@@ -47,6 +54,10 @@ export class SedeController {
     return this.sedeRepository.create(sede);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sede/count')
   @response(200, {
     description: 'Sede model count',
@@ -58,6 +69,10 @@ export class SedeController {
     return this.sedeRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sede')
   @response(200, {
     description: 'Array of Sede model instances',
@@ -76,6 +91,10 @@ export class SedeController {
     return this.sedeRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/sede')
   @response(200, {
     description: 'Sede PATCH success count',
@@ -95,6 +114,10 @@ export class SedeController {
     return this.sedeRepository.updateAll(sede, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sede/{id}')
   @response(200, {
     description: 'Sede model instance',
@@ -111,6 +134,10 @@ export class SedeController {
     return this.sedeRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/sede/{id}')
   @response(204, {
     description: 'Sede PATCH success',
@@ -129,6 +156,10 @@ export class SedeController {
     await this.sedeRepository.updateById(id, sede);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.guardarAccion]
+  })
   @put('/sede/{id}')
   @response(204, {
     description: 'Sede PUT success',
@@ -140,6 +171,10 @@ export class SedeController {
     await this.sedeRepository.replaceById(id, sede);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/sede/{id}')
   @response(204, {
     description: 'Sede DELETE success',
