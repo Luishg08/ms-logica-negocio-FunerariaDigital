@@ -94,6 +94,12 @@ export class ClienteController {
     return this.clienteRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuClienteId, ConfiguracionSeguridad.editarAccion]
+
+  })
+  
   @patch('/cliente')
   @response(200, {
     description: 'Cliente PATCH success count',

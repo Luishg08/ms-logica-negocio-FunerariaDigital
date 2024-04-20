@@ -24,6 +24,9 @@ import {
   Plan
 } from '../models';
 import {ClienteRepository} from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
+import { ClientePlanService } from '../services';
 
 export class ClientePlanController {
   constructor(
