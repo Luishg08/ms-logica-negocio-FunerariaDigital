@@ -25,7 +25,7 @@ export class ClientPlanController {
     @repository(ClientePlanRepository)
     public clientePlanRepository : ClientePlanRepository,
   ) {}
-
+  
   @post('/client-plan')
   @response(200, {
     description: 'ClientePlan model instance',

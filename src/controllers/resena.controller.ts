@@ -19,12 +19,20 @@ import {
 } from '@loopback/rest';
 import {Resena} from '../models';
 import {ResenaRepository} from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class ResenaController {
   constructor(
     @repository(ResenaRepository)
     public resenaRepository : ResenaRepository,
   ) {}
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.guardarAccion]
+
+  })
 
   @post('/resena')
   @response(200, {
@@ -47,6 +55,12 @@ export class ResenaController {
     return this.resenaRepository.create(resena);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/resena/count')
   @response(200, {
     description: 'Resena model count',
@@ -57,6 +71,12 @@ export class ResenaController {
   ): Promise<Count> {
     return this.resenaRepository.count(where);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.listarAccion]
+
+  })
 
   @get('/resena')
   @response(200, {
@@ -75,6 +95,12 @@ export class ResenaController {
   ): Promise<Resena[]> {
     return this.resenaRepository.find(filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/resena')
   @response(200, {
@@ -95,6 +121,12 @@ export class ResenaController {
     return this.resenaRepository.updateAll(resena, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/resena/{id}')
   @response(200, {
     description: 'Resena model instance',
@@ -110,6 +142,12 @@ export class ResenaController {
   ): Promise<Resena> {
     return this.resenaRepository.findById(id, filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/resena/{id}')
   @response(204, {
@@ -129,6 +167,12 @@ export class ResenaController {
     await this.resenaRepository.updateById(id, resena);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+
   @put('/resena/{id}')
   @response(204, {
     description: 'Resena PUT success',
@@ -139,6 +183,12 @@ export class ResenaController {
   ): Promise<void> {
     await this.resenaRepository.replaceById(id, resena);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
 
   @del('/resena/{id}')
   @response(204, {

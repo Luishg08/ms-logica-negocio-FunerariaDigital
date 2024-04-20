@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {MetodoPagoCliente} from '../models';
 import {MetodoPagoClienteRepository} from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class MetodoPagoClienteController {
   constructor(
@@ -26,6 +28,12 @@ export class MetodoPagoClienteController {
     public metodoPagoClienteRepository : MetodoPagoClienteRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+  
   @post('/metodo-pago-cliente')
   @response(200, {
     description: 'MetodoPagoCliente model instance',
@@ -47,6 +55,12 @@ export class MetodoPagoClienteController {
     return this.metodoPagoClienteRepository.create(metodoPagoCliente);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/metodo-pago-cliente/count')
   @response(200, {
     description: 'MetodoPagoCliente model count',
@@ -57,6 +71,12 @@ export class MetodoPagoClienteController {
   ): Promise<Count> {
     return this.metodoPagoClienteRepository.count(where);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.listarAccion]
+
+  })
 
   @get('/metodo-pago-cliente')
   @response(200, {
@@ -75,6 +95,12 @@ export class MetodoPagoClienteController {
   ): Promise<MetodoPagoCliente[]> {
     return this.metodoPagoClienteRepository.find(filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/metodo-pago-cliente')
   @response(200, {
@@ -95,6 +121,12 @@ export class MetodoPagoClienteController {
     return this.metodoPagoClienteRepository.updateAll(metodoPagoCliente, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.listarAccion]
+
+  })
+
   @get('/metodo-pago-cliente/{id}')
   @response(200, {
     description: 'MetodoPagoCliente model instance',
@@ -110,6 +142,12 @@ export class MetodoPagoClienteController {
   ): Promise<MetodoPagoCliente> {
     return this.metodoPagoClienteRepository.findById(id, filter);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.editarAccion]
+
+  })
 
   @patch('/metodo-pago-cliente/{id}')
   @response(204, {
@@ -129,6 +167,12 @@ export class MetodoPagoClienteController {
     await this.metodoPagoClienteRepository.updateById(id, metodoPagoCliente);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.guardarAccion]
+
+  })
+
   @put('/metodo-pago-cliente/{id}')
   @response(204, {
     description: 'MetodoPagoCliente PUT success',
@@ -139,6 +183,12 @@ export class MetodoPagoClienteController {
   ): Promise<void> {
     await this.metodoPagoClienteRepository.replaceById(id, metodoPagoCliente);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuMetodoPagoClienteId, ConfiguracionSeguridad.eliminarAccion]
+
+  })
 
   @del('/metodo-pago-cliente/{id}')
   @response(204, {
