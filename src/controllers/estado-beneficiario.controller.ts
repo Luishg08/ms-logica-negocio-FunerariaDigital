@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {EstadoBeneficiario} from '../models';
 import {EstadoBeneficiarioRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class EstadoBeneficiarioController {
   constructor(
@@ -26,6 +28,10 @@ export class EstadoBeneficiarioController {
     public estadoBeneficiarioRepository : EstadoBeneficiarioRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/estado-beneficiario')
   @response(200, {
     description: 'EstadoBeneficiario model instance',
@@ -47,6 +53,10 @@ export class EstadoBeneficiarioController {
     return this.estadoBeneficiarioRepository.create(estadoBeneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/estado-beneficiario/count')
   @response(200, {
     description: 'EstadoBeneficiario model count',
@@ -58,6 +68,10 @@ export class EstadoBeneficiarioController {
     return this.estadoBeneficiarioRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/estado-beneficiario')
   @response(200, {
     description: 'Array of EstadoBeneficiario model instances',
@@ -76,6 +90,10 @@ export class EstadoBeneficiarioController {
     return this.estadoBeneficiarioRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/estado-beneficiario')
   @response(200, {
     description: 'EstadoBeneficiario PATCH success count',
@@ -95,6 +113,10 @@ export class EstadoBeneficiarioController {
     return this.estadoBeneficiarioRepository.updateAll(estadoBeneficiario, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/estado-beneficiario/{id}')
   @response(200, {
     description: 'EstadoBeneficiario model instance',
@@ -111,6 +133,10 @@ export class EstadoBeneficiarioController {
     return this.estadoBeneficiarioRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/estado-beneficiario/{id}')
   @response(204, {
     description: 'EstadoBeneficiario PATCH success',
@@ -129,6 +155,10 @@ export class EstadoBeneficiarioController {
     await this.estadoBeneficiarioRepository.updateById(id, estadoBeneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/estado-beneficiario/{id}')
   @response(204, {
     description: 'EstadoBeneficiario PUT success',
@@ -140,6 +170,10 @@ export class EstadoBeneficiarioController {
     await this.estadoBeneficiarioRepository.replaceById(id, estadoBeneficiario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/estado-beneficiario/{id}')
   @response(204, {
     description: 'EstadoBeneficiario DELETE success',

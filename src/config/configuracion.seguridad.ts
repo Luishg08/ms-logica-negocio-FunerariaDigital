@@ -9,6 +9,12 @@ export namespace ConfiguracionSeguridad {
   export const menuMetodoPagoClienteId = "662130ac08f9ee40c83d5853"
   export const menuResenaId = "66212988ba9e7667e83a4898"
   export const menuClientePlanId = "66212aafba9e7667e83a48a0"
+  export const menuFacturaId = "66212a29ba9e7667e83a489d"
+  export const menuPlanId = "66212961ba9e7667e83a4897"
+  export const menuSalaId = "662129adba9e7667e83a4899"
+  export const menuServicioPlanId = "66212a10ba9e7667e83a489c"
+  export const estadoBeneficiarioId = "66212a47ba9e7667e83a489e"
+  export const servicioFunerarioId = "662129dfba9e7667e83a489b"
   //export const menuUsuarioId = "66206e9328eababa68cfa69c";
 
   export const listarAccion = "listar";

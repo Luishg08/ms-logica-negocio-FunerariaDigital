@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {Sala} from '../models';
 import {SalaRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class SalaController {
   constructor(
@@ -26,6 +28,10 @@ export class SalaController {
     public salaRepository : SalaRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/sala')
   @response(200, {
     description: 'Sala model instance',
@@ -47,6 +53,10 @@ export class SalaController {
     return this.salaRepository.create(sala);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sala/count')
   @response(200, {
     description: 'Sala model count',
@@ -58,6 +68,10 @@ export class SalaController {
     return this.salaRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sala')
   @response(200, {
     description: 'Array of Sala model instances',
@@ -76,6 +90,10 @@ export class SalaController {
     return this.salaRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/sala')
   @response(200, {
     description: 'Sala PATCH success count',
@@ -95,6 +113,10 @@ export class SalaController {
     return this.salaRepository.updateAll(sala, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/sala/{id}')
   @response(200, {
     description: 'Sala model instance',
@@ -111,6 +133,10 @@ export class SalaController {
     return this.salaRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/sala/{id}')
   @response(204, {
     description: 'Sala PATCH success',
@@ -129,6 +155,10 @@ export class SalaController {
     await this.salaRepository.updateById(id, sala);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/sala/{id}')
   @response(204, {
     description: 'Sala PUT success',
@@ -140,6 +170,10 @@ export class SalaController {
     await this.salaRepository.replaceById(id, sala);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/sala/{id}')
   @response(204, {
     description: 'Sala DELETE success',

@@ -32,9 +32,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.guardarAccion]
-
   })
-
   @post('/sede')
   @response(200, {
     description: 'Sede model instance',
@@ -59,9 +57,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/sede/count')
   @response(200, {
     description: 'Sede model count',
@@ -76,9 +72,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/sede')
   @response(200, {
     description: 'Array of Sede model instances',
@@ -100,9 +94,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.editarAccion]
-
   })
-
   @patch('/sede')
   @response(200, {
     description: 'Sede PATCH success count',
@@ -125,9 +117,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/sede/{id}')
   @response(200, {
     description: 'Sede model instance',
@@ -147,9 +137,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.editarAccion]
-
   })
-
   @patch('/sede/{id}')
   @response(204, {
     description: 'Sede PATCH success',
@@ -171,9 +159,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.guardarAccion]
-
   })
-
   @put('/sede/{id}')
   @response(204, {
     description: 'Sede PUT success',
@@ -188,9 +174,7 @@ export class SedeController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuSedeId, ConfiguracionSeguridad.eliminarAccion]
-
   })
-
   @del('/sede/{id}')
   @response(204, {
     description: 'Sede DELETE success',

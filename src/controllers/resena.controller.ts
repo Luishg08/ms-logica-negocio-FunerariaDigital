@@ -187,9 +187,7 @@ export class ResenaController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.eliminarAccion]
-
   })
-
   @del('/resena/{id}')
   @response(204, {
     description: 'Resena DELETE success',

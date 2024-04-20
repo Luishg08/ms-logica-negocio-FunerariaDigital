@@ -25,6 +25,8 @@ import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFuner
 import {ClientePlanService} from '../services';
 import {NotificacionesService} from '../services/notificaciones.service';
 import {ServicioFunerarioService} from '../services/servicio-funerario.service';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class ServicioFunerarioController {
   constructor(
@@ -44,6 +46,10 @@ export class ServicioFunerarioController {
     public servicioClientePlan: ClientePlanService
   ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/solicitar-servicio')
   @response(200, {
     description: "Proceso de solicitud de un servicio por parte de un cliente",
@@ -136,6 +142,10 @@ export class ServicioFunerarioController {
 
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/servicio-funerario')
   @response(200, {
     description: 'ServicioFunerario model instance',
@@ -157,6 +167,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.create(servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario/count')
   @response(200, {
     description: 'ServicioFunerario model count',
@@ -168,6 +182,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario-resenas')
   @response(200, {
     description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
@@ -200,7 +218,10 @@ export class ServicioFunerarioController {
     }
   }
 
-
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario')
   @response(200, {
     description: 'Array of ServicioFunerario model instances',
@@ -219,6 +240,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-funerario')
   @response(200, {
     description: 'ServicioFunerario PATCH success count',
@@ -238,6 +263,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.updateAll(servicioFunerario, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario/{id}')
   @response(200, {
     description: 'ServicioFunerario model instance',
@@ -254,6 +283,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario PATCH success',
@@ -272,6 +305,10 @@ export class ServicioFunerarioController {
     await this.servicioFunerarioRepository.updateById(id, servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario PUT success',
@@ -283,6 +320,10 @@ export class ServicioFunerarioController {
     await this.servicioFunerarioRepository.replaceById(id, servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario DELETE success',

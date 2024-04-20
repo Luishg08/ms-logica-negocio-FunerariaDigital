@@ -19,6 +19,9 @@ import {
 } from '@loopback/rest';
 import {ServicioPlan} from '../models';
 import {ServicioPlanRepository} from '../repositories';
+import {AutoEncryptionLoggerLevel} from 'mongodb';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class ServicioPlanController {
   constructor(
@@ -26,6 +29,10 @@ export class ServicioPlanController {
     public servicioPlanRepository : ServicioPlanRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/servicio-plan')
   @response(200, {
     description: 'ServicioPlan model instance',
@@ -47,6 +54,10 @@ export class ServicioPlanController {
     return this.servicioPlanRepository.create(servicioPlan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-plan/count')
   @response(200, {
     description: 'ServicioPlan model count',
@@ -58,6 +69,10 @@ export class ServicioPlanController {
     return this.servicioPlanRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-plan')
   @response(200, {
     description: 'Array of ServicioPlan model instances',
@@ -76,6 +91,10 @@ export class ServicioPlanController {
     return this.servicioPlanRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-plan')
   @response(200, {
     description: 'ServicioPlan PATCH success count',
@@ -95,6 +114,10 @@ export class ServicioPlanController {
     return this.servicioPlanRepository.updateAll(servicioPlan, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-plan/{id}')
   @response(200, {
     description: 'ServicioPlan model instance',
@@ -111,6 +134,10 @@ export class ServicioPlanController {
     return this.servicioPlanRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-plan/{id}')
   @response(204, {
     description: 'ServicioPlan PATCH success',
@@ -129,6 +156,10 @@ export class ServicioPlanController {
     await this.servicioPlanRepository.updateById(id, servicioPlan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/servicio-plan/{id}')
   @response(204, {
     description: 'ServicioPlan PUT success',
@@ -140,6 +171,10 @@ export class ServicioPlanController {
     await this.servicioPlanRepository.replaceById(id, servicioPlan);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/servicio-plan/{id}')
   @response(204, {
     description: 'ServicioPlan DELETE success',
