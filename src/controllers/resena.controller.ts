@@ -20,10 +20,12 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
+import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CredencialesResenarServicio, Resena} from '../models';
 import {ResenaRepository} from '../repositories';
 import {ClientePlanService, ResenaService} from '../services';
+import {NotificacionesService} from '../services/notificaciones.service';
 
 export class ResenaController {
   constructor(
@@ -32,7 +34,9 @@ export class ResenaController {
     @service(ResenaService)
     public resenaService: ResenaService,
     @service(ClientePlanService)
-    public clientePlanService: ClientePlanService
+    public clientePlanService: ClientePlanService,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService
   ) { }
 
   @authenticate({
@@ -102,6 +106,17 @@ export class ResenaController {
           reseña.calificacion = resena.calificacion;
           reseña.comentario = resena.comentario;
           reseña.servicioFunerarioId = resena.servicioFunerarioId;
+
+          let url1 = ConfiguracionNotificaciones.urlNotificacionAgradecimientoReseña;
+          let datosCorreo1 = {
+            correoDestino: cliente.correo,
+            nombreDestino: cliente.nombre + " " + cliente.apellido,
+            asuntoCorreo: ConfiguracionNotificaciones.asuntoAgradecimientoReseña,
+            idServicioFunerario: resena.servicioFunerarioId.toString(),
+            usuario: cliente.nombre + " " + cliente.apellido
+          };
+
+          this.servicioNotificaciones.EnviarNotificacion(datosCorreo1, url1)
           return this.resenaRepository.create(reseña);
         }
       }
