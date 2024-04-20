@@ -17,3 +17,4 @@ export * from './servicio-plan.model'
 export * from './sede.model';
 
 export * from './credenciales-verificar-estado-cliente.model';
+export * from './credenciales-resenar-servicio.model';

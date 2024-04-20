@@ -49,7 +49,7 @@ export class ServicioFunerarioService {
     }
   }
 
-  async ConsultarServicioConMismoHorarioYSala(idSala: number, fecha_hora_ingreso: string, fecha_hora_salida: string): Promise<any> {
+  async ConsultarServicioConMismoHorarioYSala(idSala: number, fecha_hora_ingreso: Date, fecha_hora_salida: Date): Promise<any> {
     let servicioYaCreado = await this.servicioFunerarioRepository.findOne({
       where: {
         salaId: idSala,
