@@ -1,9 +1,9 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {ServicioFunerario, ServicioFunerarioRelations, Sala, Beneficiario} from '../models';
-import {SalaRepository} from './sala.repository';
+import {Beneficiario, Sala, ServicioFunerario, ServicioFunerarioRelations} from '../models';
 import {BeneficiarioRepository} from './beneficiario.repository';
+import {SalaRepository} from './sala.repository';
 
 export class ServicioFunerarioRepository extends DefaultCrudRepository<
   ServicioFunerario,

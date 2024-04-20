@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,31 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Factura} from '../models';
 import {FacturaRepository} from '../repositories';
 
 export class FacturaController {
   constructor(
     @repository(FacturaRepository)
-    public facturaRepository : FacturaRepository,
-  ) {}
+    public facturaRepository: FacturaRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.guardarAccion]
+
+  })
   @post('/factura')
   @response(200, {
     description: 'Factura model instance',
@@ -47,6 +54,11 @@ export class FacturaController {
     return this.facturaRepository.create(factura);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/factura/count')
   @response(200, {
     description: 'Factura model count',
@@ -58,6 +70,11 @@ export class FacturaController {
     return this.facturaRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.listarAccion]
+
+  })
   @get('/factura')
   @response(200, {
     description: 'Array of Factura model instances',
@@ -76,6 +93,11 @@ export class FacturaController {
     return this.facturaRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.editarAccion]
+
+  })
   @patch('/factura')
   @response(200, {
     description: 'Factura PATCH success count',

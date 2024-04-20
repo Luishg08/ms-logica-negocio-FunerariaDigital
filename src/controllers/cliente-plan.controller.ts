@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -5,28 +6,30 @@ import {
   repository,
   Where,
 } from '@loopback/repository';
-  import {
+import {
   del,
   get,
   getModelSchemaRef,
   getWhereSchemaFor,
+  HttpErrors,
   param,
   patch,
   post,
   requestBody,
+  response,
 } from '@loopback/rest';
 import {
-Cliente,
-ClientePlan,
-Plan,
+  Cliente,
+  CredencialesVerificarEstadoCliente,
+  Plan
 } from '../models';
 import {ClienteRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class ClientePlanController {
   constructor(
     @repository(ClienteRepository) protected clienteRepository: ClienteRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService
   ) { }
 
   @authenticate({
@@ -132,5 +135,37 @@ export class ClientePlanController {
     @param.query.object('where', getWhereSchemaFor(Plan)) where?: Where<Plan>,
   ): Promise<Count> {
     return this.clienteRepository.plans(id).delete(where);
+  }
+  @post('/verificar-estado-cliente')
+  @response(200, {
+    description: "Proceso de solicitud de un servicio por parte de un cliente",
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}}
+  })
+  async verificarEstadoCliente(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario)
+    if (cliente) {
+      let respuesta = await this.clientePlanService.verificarEstadoClientePlan(cliente.id_cliente)
+      if (respuesta) {
+        return new HttpErrors[401]("El plan del cliente esta activo");
+      }
+      else {
+        cliente.estado_cliente = false;
+        this.clienteRepository.updateById(cliente.id_cliente, cliente);
+        return new HttpErrors[401]("El plan del cliente ha expirado");
+      }
+    } else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asignado");
+    }
   }
 }

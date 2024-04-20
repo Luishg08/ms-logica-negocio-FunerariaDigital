@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,133 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {ServicioFunerario} from '../models';
-import {ServicioFunerarioRepository} from '../repositories';
+import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
+import {CredencialesVerificarEstadoCliente, ServicioFunerario} from '../models';
+import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {ClientePlanService} from '../services';
+import {NotificacionesService} from '../services/notificaciones.service';
+import {ServicioFunerarioService} from '../services/servicio-funerario.service';
 
 export class ServicioFunerarioController {
   constructor(
     @repository(ServicioFunerarioRepository)
-    public servicioFunerarioRepository : ServicioFunerarioRepository,
-  ) {}
+    public servicioFunerarioRepository: ServicioFunerarioRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @repository(BeneficiarioRepository)
+    public beneficiarioRepository: BeneficiarioRepository,
+    @repository(SalaRepository)
+    public salaRepository: SalaRepository,
+    @service(ServicioFunerarioService)
+    public servicioFunerarioService: ServicioFunerarioService,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
+    @service(ClientePlanService)
+    public servicioClientePlan: ClientePlanService
+  ) { }
+
+  @post('/solicitar-servicio')
+  @response(200, {
+    description: "Proceso de solicitud de un servicio por parte de un cliente",
+    content: {'application/json': {schema: getModelSchemaRef(ServicioFunerario)}}
+  })
+  async solicitarUnServicioFunerario(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(ServicioFunerario)
+          }
+        }
+      }
+    )
+    datos: Omit<ServicioFunerario, "id_servicio_funerario">
+  ): Promise<Object> {
+    //Obtener el beneficiario junto con su cliente y su estado
+    let beneficiario: any = await this.servicioFunerarioService.ObtenerClienteyEstadodelBeneficiario(datos.beneficiarioId);
+    if (beneficiario) {
+      if (beneficiario.clienteBeneficiario.estado_cliente === true) {
+        if (beneficiario.estadoDeBeneficiario.nombre === "activo") {
+          let posibleServicioConElMismoHorarioYSala: ServicioFunerario = await this.servicioFunerarioService.ConsultarServicioConMismoHorarioYSala(datos.salaId, datos.fecha_hora_ingreso, datos.fecha_hora_salida);
+          if (!posibleServicioConElMismoHorarioYSala) {
+            console.log("No hay un servicio con el mismo horario y sala");
+            let sala: any = await this.servicioFunerarioService.ObtenerSalaConSedeYCiudad(datos.salaId);
+            if (sala) {
+              if (sala.sede.ciudad.nombre !== datos.ubicacion_cuerpo) {
+                datos.servicio_traslado = true;
+              }
+              let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(8);
+              let url1 = ConfiguracionNotificaciones.urlNotificacionCodigoServicioFunerario;
+              let datosCorreo1 = {
+                correoDestino: beneficiario.clienteBeneficiario.correo,
+                nombreDestino: beneficiario.clienteBeneficiario.primerNombre + " " + beneficiario.clienteBeneficiario.primerApellido,
+                asuntoCorreo: ConfiguracionNotificaciones.asuntoCodigoServicioFunerario,
+                codigoUnico: codigo_unico,
+                usuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
+              };
+              this.servicioNotificaciones.EnviarNotificacion(datosCorreo1, url1);
+
+              let url = ConfiguracionNotificaciones.urlNotificacionServicioFunerario;
+
+              // Envío de código único del servicio generado al correo electrónico del cliente
+              let datosCorreo = {
+                correoDestino: beneficiario.clienteBeneficiario.correo,
+                nombreDestino: beneficiario.clienteBeneficiario.primerNombre + " " + beneficiario.clienteBeneficiario.primerApellido,
+                asuntoCorreo: ConfiguracionNotificaciones.asuntoServicioFunerario,
+                sala: sala.numero_sala,
+                fechaIngreso: datos.fecha_hora_ingreso,
+                fechaSalida: datos.fecha_hora_salida,
+                sede: sala.sede.nombre,
+                nombreUsuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
+                ciudad: sala.sede.ciudad.nombre,
+                ubicacionCuerpo: datos.ubicacion_cuerpo,
+                beneficiario: beneficiario.nombre + " " + beneficiario.apellido,
+                tipoSepultura: datos.tipo_sepultura
+              };
+              this.servicioNotificaciones.EnviarNotificacion(datosCorreo, url);
+
+              let servicioFunerario: ServicioFunerario = new ServicioFunerario;
+              servicioFunerario.beneficiarioId = datos.beneficiarioId;
+              servicioFunerario.codigo_unico = codigo_unico;
+              servicioFunerario.estado_codigo_unico = true;
+              servicioFunerario.notificado = true;
+              servicioFunerario.fecha_hora_ingreso = datos.fecha_hora_ingreso;
+              servicioFunerario.fecha_hora_salida = datos.fecha_hora_salida;
+              servicioFunerario.servicio_traslado = datos.servicio_traslado;
+              servicioFunerario.tipo_sepultura = datos.tipo_sepultura;
+              servicioFunerario.salaId = datos.salaId;
+              servicioFunerario.ubicacion_cuerpo = datos.ubicacion_cuerpo;
+              return this.servicioFunerarioRepository.create(servicioFunerario);
+              ;
+
+            } else {
+              return new HttpErrors[401]("La sala no existe");
+            }
+          } else {
+            return new HttpErrors[401]("La fecha y hora seleccionada no está disponible para la sala seleccionada, ingrese otro horario o seleccione otra sala");
+          }
+        } else {
+          return new HttpErrors[401]("El beneficiario no se encuentra activo");
+        }
+      } else {
+        return new HttpErrors[401]("El Cliente no ha adquirido un plan");
+      }
+    } else {
+      return new HttpErrors[401]("El beneficiario no existe");
+    }
+
+  }
 
   @post('/servicio-funerario')
   @response(200, {
@@ -57,6 +167,39 @@ export class ServicioFunerarioController {
   ): Promise<Count> {
     return this.servicioFunerarioRepository.count(where);
   }
+
+  @get('/servicio-funerario-resenas')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async reseñas(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.servicioClientePlan.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let serviciosFunerarios = await this.servicioFunerarioService.ObtenerReseñasConServiciosFunerarios(cliente.id_cliente);
+      if (serviciosFunerarios) {
+        return serviciosFunerarios;
+      }
+      else {
+        return []
+      }
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado ")
+    }
+  }
+
 
   @get('/servicio-funerario')
   @response(200, {
@@ -147,4 +290,5 @@ export class ServicioFunerarioController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.servicioFunerarioRepository.deleteById(id);
   }
+
 }
