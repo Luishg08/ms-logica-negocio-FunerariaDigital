@@ -157,7 +157,7 @@ export class SalaController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.editarAccion]
+    options:[ConfiguracionSeguridad.menuSalaId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/sala/{id}')
   @response(204, {

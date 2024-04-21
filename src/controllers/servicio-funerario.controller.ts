@@ -329,7 +329,7 @@ export class ServicioFunerarioController {
 
   @authenticate({
     strategy: 'auth',
-    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/servicio-funerario/{id}')
   @response(204, {

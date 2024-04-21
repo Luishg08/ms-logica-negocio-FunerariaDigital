@@ -158,7 +158,7 @@ export class ServicioPlanController {
 
   @authenticate({
     strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.editarAccion]
+    options: [ConfiguracionSeguridad.menuServicioPlanId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/servicio-plan/{id}')
   @response(204, {

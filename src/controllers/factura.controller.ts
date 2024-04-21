@@ -162,7 +162,7 @@ export class FacturaController {
 
   @authenticate({
     strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.editarAccion]
+    options: [ConfiguracionSeguridad.menuFacturaId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/factura/{id}')
   @response(204, {

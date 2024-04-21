@@ -157,7 +157,7 @@ export class EstadoBeneficiarioController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.editarAccion]
+    options:[ConfiguracionSeguridad.estadoBeneficiarioId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/estado-beneficiario/{id}')
   @response(204, {
