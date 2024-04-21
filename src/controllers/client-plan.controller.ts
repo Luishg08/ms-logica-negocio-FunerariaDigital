@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,29 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {ClientePlan} from '../models';
+import {ClientePlan, CredencialesVerificarEstadoCliente} from '../models';
 import {ClientePlanRepository} from '../repositories';
+import {ClientePlanService} from '../services';
 
 export class ClientPlanController {
   constructor(
     @repository(ClientePlanRepository)
-    public clientePlanRepository : ClientePlanRepository,
-  ) {}
-  
+    public clientePlanRepository: ClientePlanRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService
+  ) { }
+
   @post('/client-plan')
   @response(200, {
     description: 'ClientePlan model instance',
@@ -146,5 +151,44 @@ export class ClientPlanController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clientePlanRepository.deleteById(id);
+  }
+
+  @get('/planes-de-un-cliente')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async planesQueHaTenidoUnCliente(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let clientePlan: any[] = await this.clientePlanRepository.find(
+        {
+          where: {
+            clienteId: cliente.id_cliente
+          }
+        },
+        {
+          include: [{
+            relation: 'miPlan'
+          }]
+
+        }
+      )
+      return clientePlan;
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado");
+    }
   }
 }

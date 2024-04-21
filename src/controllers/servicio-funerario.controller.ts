@@ -1,3 +1,8 @@
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {
   Count,
@@ -20,6 +25,7 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CredencialesVerificarEstadoCliente, ServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
 import {ClientePlanService} from '../services';
@@ -44,6 +50,7 @@ export class ServicioFunerarioController {
     public servicioClientePlan: ClientePlanService
   ) { }
 
+
   @post('/solicitar-servicio')
   @response(200, {
     description: "Proceso de solicitud de un servicio por parte de un cliente",
@@ -61,6 +68,18 @@ export class ServicioFunerarioController {
     )
     datos: Omit<ServicioFunerario, "id_servicio_funerario">
   ): Promise<Object> {
+    mongoose.connect('mongodb+srv://adminChat:admin12345@serviciochat.wmgtprq.mongodb.net/?w=majority')
+      .then(() => console.log('Conexión a MongoDB exitosa'))
+      .catch((e: string) => console.error('Error de conexión a MongoDB:', e));
+
+    const salaChatSchema = new mongoose.Schema({
+      codigoSalaChat: String,
+      idCliente: Number,
+      estadoSalaChat: Boolean
+    });
+
+    const salaChat = mongoose.model('SalaChat', salaChatSchema);
+
     //Obtener el beneficiario junto con su cliente y su estado
     let beneficiario: any = await this.servicioFunerarioService.ObtenerClienteyEstadodelBeneficiario(datos.beneficiarioId);
     if (beneficiario) {
@@ -75,6 +94,15 @@ export class ServicioFunerarioController {
                 datos.servicio_traslado = true;
               }
               let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(8);
+
+              const salaChat1 = new salaChat({
+                codigoSalaChat: codigo_unico,
+                idCliente: beneficiario.clienteBeneficiario.id_cliente,
+                estadoSalaChat: true
+              });
+              await salaChat1.save();
+              console.log('salaChat guardada exitosamente en la base de datos');
+
               let url1 = ConfiguracionNotificaciones.urlNotificacionCodigoServicioFunerario;
               let datosCorreo1 = {
                 correoDestino: beneficiario.clienteBeneficiario.correo,
@@ -136,6 +164,10 @@ export class ServicioFunerarioController {
 
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/servicio-funerario')
   @response(200, {
     description: 'ServicioFunerario model instance',
@@ -157,6 +189,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.create(servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario/count')
   @response(200, {
     description: 'ServicioFunerario model count',
@@ -168,6 +204,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario-resenas')
   @response(200, {
     description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
@@ -200,7 +240,10 @@ export class ServicioFunerarioController {
     }
   }
 
-
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario')
   @response(200, {
     description: 'Array of ServicioFunerario model instances',
@@ -219,6 +262,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-funerario')
   @response(200, {
     description: 'ServicioFunerario PATCH success count',
@@ -238,6 +285,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.updateAll(servicioFunerario, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/servicio-funerario/{id}')
   @response(200, {
     description: 'ServicioFunerario model instance',
@@ -254,6 +305,10 @@ export class ServicioFunerarioController {
     return this.servicioFunerarioRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario PATCH success',
@@ -272,6 +327,10 @@ export class ServicioFunerarioController {
     await this.servicioFunerarioRepository.updateById(id, servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.editarAccion]
+  })
   @put('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario PUT success',
@@ -283,6 +342,10 @@ export class ServicioFunerarioController {
     await this.servicioFunerarioRepository.replaceById(id, servicioFunerario);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/servicio-funerario/{id}')
   @response(204, {
     description: 'ServicioFunerario DELETE success',

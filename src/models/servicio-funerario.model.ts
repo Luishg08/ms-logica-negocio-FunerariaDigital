@@ -50,16 +50,16 @@ export class ServicioFunerario extends Entity {
   servicio_traslado: boolean;
 
   @property({
-    type: 'string',
+    type: 'date',
     required: true,
   })
-  fecha_hora_ingreso: string;
+  fecha_hora_ingreso: Date;
 
   @property({
-    type: 'string',
+    type: 'date',
     required: true,
   })
-  fecha_hora_salida: string;
+  fecha_hora_salida: Date;
 
   @property({
     type: 'string',

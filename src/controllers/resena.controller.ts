@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,26 +9,35 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
-import {Resena} from '../models';
+import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {CredencialesResenarServicio, Resena} from '../models';
 import {ResenaRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
+import {ClientePlanService, ResenaService} from '../services';
+import {NotificacionesService} from '../services/notificaciones.service';
 
 export class ResenaController {
   constructor(
     @repository(ResenaRepository)
-    public resenaRepository : ResenaRepository,
-  ) {}
+    public resenaRepository: ResenaRepository,
+    @service(ResenaService)
+    public resenaService: ResenaService,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService
+  ) { }
 
   @authenticate({
     strategy: 'auth',
@@ -53,6 +64,64 @@ export class ResenaController {
     resena: Omit<Resena, 'id'>,
   ): Promise<Resena> {
     return this.resenaRepository.create(resena);
+  }
+
+
+  @post('/resenar-servicio')
+  @response(200, {
+    description: 'Resena model instance',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesResenarServicio)}},
+  })
+  async reseñarServicio(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesResenarServicio),
+        },
+      },
+    })
+    resena: Omit<CredencialesResenarServicio, 'idResena'>,
+  ): Promise<Object> {
+    let idCliente = await this.resenaService.ObtenerClientePorIdServicioFunerario(resena.servicioFunerarioId);
+    console.log(idCliente + "Este es el id del cliente");
+    if (!idCliente) {
+      return new HttpErrors[401]('No se encontró un cliente asociado al servicio funerario');
+    }
+    else {
+      let cliente: any = await this.clientePlanService.obtenerClienteConIdUsuario(resena.idUsuario);
+      if (!cliente) {
+        return new HttpErrors[401]('No se encontró un cliente asociado al usuario');
+      }
+      if (cliente.id_cliente != idCliente) {
+        return new HttpErrors[401]('El cliente no tiene permisos para reseñar este servicio funerario');
+      }
+      else {
+        let puedeReseñar: boolean = await this.resenaService.VerificarSiClienteYaPuedeResenar(resena.servicioFunerarioId);
+        if (!puedeReseñar) {
+          return new HttpErrors[401]('El cliente no puede reseñar este servicio funerario porque no ha pasado la fecha');
+        }
+        else {
+          let reseña = new Resena()
+          reseña.fechaResena = new Date();
+          reseña.calificacion = resena.calificacion;
+          reseña.comentario = resena.comentario;
+          reseña.servicioFunerarioId = resena.servicioFunerarioId;
+
+          let url1 = ConfiguracionNotificaciones.urlNotificacionAgradecimientoReseña;
+          let datosCorreo1 = {
+            correoDestino: cliente.correo,
+            nombreDestino: cliente.nombre + " " + cliente.apellido,
+            asuntoCorreo: ConfiguracionNotificaciones.asuntoAgradecimientoReseña,
+            idServicioFunerario: resena.servicioFunerarioId.toString(),
+            usuario: cliente.nombre + " " + cliente.apellido
+          };
+
+          this.servicioNotificaciones.EnviarNotificacion(datosCorreo1, url1)
+          return this.resenaRepository.create(reseña);
+        }
+      }
+    }
+
   }
 
   @authenticate({
@@ -187,9 +256,7 @@ export class ResenaController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuResenaId, ConfiguracionSeguridad.eliminarAccion]
-
   })
-
   @del('/resena/{id}')
   @response(204, {
     description: 'Resena DELETE success',

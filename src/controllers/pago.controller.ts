@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,26 +9,31 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Pago} from '../models';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {CredencialesVerificarEstadoCliente, Pago} from '../models';
 import {PagoRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
+import {ClientePlanService, PagoService} from '../services';
 
 export class PagoController {
   constructor(
     @repository(PagoRepository)
-    public pagoRepository : PagoRepository,
-  ) {}
+    public pagoRepository: PagoRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService,
+    @service(PagoService)
+    public servicioPago: PagoService
+  ) { }
 
   @authenticate({
     strategy: 'auth',
@@ -196,5 +203,32 @@ export class PagoController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.pagoRepository.deleteById(id);
+  }
+
+  @get('/pagos-de-un-cliente')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async pagosDeUnCliente(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let pagos: any = await this.servicioPago.ObtenerPagosDeUnCliente(cliente.id_cliente);
+      return pagos
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado");
+    }
   }
 }

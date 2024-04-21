@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,34 +8,31 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {MetodoPago} from '../models';
 import {MetodoPagoRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class MetodoPagoController {
   constructor(
     @repository(MetodoPagoRepository)
-    public metodoPagoRepository : MetodoPagoRepository,
-  ) {}
+    public metodoPagoRepository: MetodoPagoRepository,
+  ) { }
 
 
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.guardarAccion]
-
   })
-  
   @post('/metodo-pago')
   @response(200, {
     description: 'MetodoPago model instance',
@@ -59,9 +57,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/metodo-pago/count')
   @response(200, {
     description: 'MetodoPago model count',
@@ -76,9 +72,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/metodo-pago')
   @response(200, {
     description: 'Array of MetodoPago model instances',
@@ -100,9 +94,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.editarAccion]
-
   })
-
   @patch('/metodo-pago')
   @response(200, {
     description: 'MetodoPago PATCH success count',
@@ -125,9 +117,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.listarAccion]
-
   })
-
   @get('/metodo-pago/{id}')
   @response(200, {
     description: 'MetodoPago model instance',
@@ -147,9 +137,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.editarAccion]
-
   })
-
   @patch('/metodo-pago/{id}')
   @response(204, {
     description: 'MetodoPago PATCH success',
@@ -171,9 +159,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.guardarAccion]
-
   })
-
   @put('/metodo-pago/{id}')
   @response(204, {
     description: 'MetodoPago PUT success',
@@ -188,9 +174,7 @@ export class MetodoPagoController {
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuMetodoPagoId, ConfiguracionSeguridad.eliminarAccion]
-
   })
-
   @del('/metodo-pago/{id}')
   @response(204, {
     description: 'MetodoPago DELETE success',

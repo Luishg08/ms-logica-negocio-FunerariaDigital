@@ -43,6 +43,11 @@ export class Plan extends Entity {
   @hasMany(() => ServicioPlan, {through: {model: () => PlanServicioPlan}})
   servicios: ServicioPlan[];
 
+  @property({
+    type: 'number',
+  })
+  clientePlanId?: number;
+
   constructor(data?: Partial<Plan>) {
     super(data);
   }
