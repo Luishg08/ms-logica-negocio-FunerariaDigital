@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Plan} from './plan.model';
 
 @model(
   {
@@ -61,6 +62,9 @@ export class ClientePlan extends Entity {
     type: 'number',
   })
   planId?: number;
+
+  @hasOne(() => Plan)
+  miPlan: Plan;
 
   constructor(data?: Partial<ClientePlan>) {
     super(data);

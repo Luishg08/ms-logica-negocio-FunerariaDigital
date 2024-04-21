@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,28 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {MetodoPagoCliente} from '../models';
+import {CredencialesVerificarEstadoCliente, MetodoPagoCliente} from '../models';
 import {MetodoPagoClienteRepository} from '../repositories';
+import {ClientePlanService} from '../services';
 
 export class MetodoDePagoClienteController {
   constructor(
     @repository(MetodoPagoClienteRepository)
-    public metodoPagoClienteRepository : MetodoPagoClienteRepository,
-  ) {}
+    public metodoPagoClienteRepository: MetodoPagoClienteRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService
+  ) { }
 
   @post('/metodo-pago-cliente')
   @response(200, {
@@ -146,5 +151,36 @@ export class MetodoDePagoClienteController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.metodoPagoClienteRepository.deleteById(id);
+  }
+
+  @get('/metodos-de-pago-de-un-cliente')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async metodosDePagoDeUnCliente(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let metodosPago: any[] = await this.metodoPagoClienteRepository.find({
+        where: {
+          clienteId: cliente.id_cliente
+        }
+      })
+      return metodosPago;
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado");
+    }
   }
 }

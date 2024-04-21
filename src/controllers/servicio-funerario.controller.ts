@@ -1,3 +1,8 @@
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {
   Count,
@@ -20,13 +25,12 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/configuracion.notificaciones';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CredencialesVerificarEstadoCliente, ServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
 import {ClientePlanService} from '../services';
 import {NotificacionesService} from '../services/notificaciones.service';
 import {ServicioFunerarioService} from '../services/servicio-funerario.service';
-import {authenticate} from '@loopback/authentication';
-import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 
 export class ServicioFunerarioController {
   constructor(
@@ -46,10 +50,7 @@ export class ServicioFunerarioController {
     public servicioClientePlan: ClientePlanService
   ) { }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.guardarAccion]
-  })
+
   @post('/solicitar-servicio')
   @response(200, {
     description: "Proceso de solicitud de un servicio por parte de un cliente",
@@ -67,6 +68,18 @@ export class ServicioFunerarioController {
     )
     datos: Omit<ServicioFunerario, "id_servicio_funerario">
   ): Promise<Object> {
+    mongoose.connect('mongodb+srv://adminChat:admin12345@serviciochat.wmgtprq.mongodb.net/?w=majority')
+      .then(() => console.log('Conexión a MongoDB exitosa'))
+      .catch((e: string) => console.error('Error de conexión a MongoDB:', e));
+
+    const salaChatSchema = new mongoose.Schema({
+      codigoSalaChat: String,
+      idCliente: Number,
+      estadoSalaChat: Boolean
+    });
+
+    const salaChat = mongoose.model('SalaChat', salaChatSchema);
+
     //Obtener el beneficiario junto con su cliente y su estado
     let beneficiario: any = await this.servicioFunerarioService.ObtenerClienteyEstadodelBeneficiario(datos.beneficiarioId);
     if (beneficiario) {
@@ -81,6 +94,15 @@ export class ServicioFunerarioController {
                 datos.servicio_traslado = true;
               }
               let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(8);
+
+              const salaChat1 = new salaChat({
+                codigoSalaChat: codigo_unico,
+                idCliente: beneficiario.clienteBeneficiario.id_cliente,
+                estadoSalaChat: true
+              });
+              await salaChat1.save();
+              console.log('salaChat guardada exitosamente en la base de datos');
+
               let url1 = ConfiguracionNotificaciones.urlNotificacionCodigoServicioFunerario;
               let datosCorreo1 = {
                 correoDestino: beneficiario.clienteBeneficiario.correo,

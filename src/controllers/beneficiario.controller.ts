@@ -1,4 +1,5 @@
 import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -19,13 +21,18 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
-import {Beneficiario} from '../models';
-import {BeneficiarioRepository} from '../repositories';
+import {Beneficiario, CredencialesCambiarEstadoBeneficiario, CredencialesVerificarEstadoCliente} from '../models';
+import {BeneficiarioRepository, EstadoBeneficiarioRepository} from '../repositories';
+import {ClientePlanService} from '../services';
 
 export class BeneficiarioController {
   constructor(
     @repository(BeneficiarioRepository)
     public beneficiarioRepository: BeneficiarioRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService,
+    @repository(EstadoBeneficiarioRepository)
+    public estadoBeneficiarioRepository: EstadoBeneficiarioRepository
   ) { }
 
   @authenticate({
@@ -187,5 +194,82 @@ export class BeneficiarioController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.beneficiarioRepository.deleteById(id);
+  }
+
+  @get('/beneficiarios-de-cliente')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async BeneficiariosDeUnCliente(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)
+          }
+        }
+      }
+    )
+    datos: CredencialesVerificarEstadoCliente
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let beneficiarios: any[] = await this.beneficiarioRepository.find({
+        where: {
+          clienteId: cliente.id_cliente
+        },
+        include: [
+          {
+            relation: "estadoDeBeneficiario"
+          },
+        ]
+      })
+      return beneficiarios;
+    }
+    else {
+      return new HttpErrors[401]("El usuario no tiene un cliente asociado");
+    }
+  }
+
+  @patch('/actualizar-estado-beneficiario')
+  @response(200, {
+    description: 'Beneficiario PATCH success count',
+    content: {'application/json': {schema: CredencialesCambiarEstadoBeneficiario}},
+  })
+  async cambiarEstadoDeUnBeneficiario(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesCambiarEstadoBeneficiario),
+        },
+      },
+    })
+    datos: CredencialesCambiarEstadoBeneficiario,
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente) {
+      let beneficiario = await this.beneficiarioRepository.findById(datos.idBeneficiario);
+      if (beneficiario) {
+        if (beneficiario.clienteId === cliente.id_cliente) {
+          let estado: any = await this.estadoBeneficiarioRepository.findOne({
+            where: {
+              nombre: datos.estadoNuevo
+            }
+          })
+          console.log(estado);
+          beneficiario.estadoId = estado.id_estado;
+          this.beneficiarioRepository.updateById(datos.idBeneficiario, beneficiario);
+          return this.beneficiarioRepository.findById(datos.idBeneficiario);
+        }
+        else {
+          return new HttpErrors[401]("El beneficiario no pertenece al cliente");
+        }
+      }
+      else {
+        return new HttpErrors[401]("El beneficiario no existe");
+      }
+    }
+    return new HttpErrors[401]("El usuario no tiene un cliente asociado");
   }
 }
