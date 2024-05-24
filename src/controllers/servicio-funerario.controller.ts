@@ -28,9 +28,10 @@ import {ConfiguracionNotificaciones} from '../config/configuracion.notificacione
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CredencialesVerificarEstadoCliente, ServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
-import {ClientePlanService} from '../services';
+import {ChatService, ClientePlanService} from '../services';
 import {NotificacionesService} from '../services/notificaciones.service';
 import {ServicioFunerarioService} from '../services/servicio-funerario.service';
+
 
 export class ServicioFunerarioController {
   constructor(
@@ -47,7 +48,9 @@ export class ServicioFunerarioController {
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
     @service(ClientePlanService)
-    public servicioClientePlan: ClientePlanService
+    public servicioClientePlan: ClientePlanService,
+    @service(ChatService)
+    public servicioChat: ChatService
   ) { }
 
 
@@ -68,19 +71,6 @@ export class ServicioFunerarioController {
     )
     datos: Omit<ServicioFunerario, "id_servicio_funerario">
   ): Promise<Object> {
-    mongoose.connect('mongodb+srv://adminChat:admin12345@serviciochat.wmgtprq.mongodb.net/?w=majority')
-      .then(() => console.log('Conexión a MongoDB exitosa'))
-      .catch((e: string) => console.error('Error de conexión a MongoDB:', e));
-
-    const salaChatSchema = new mongoose.Schema({
-      codigoSalaChat: String,
-      idCliente: Number,
-      estadoSalaChat: Boolean
-    });
-
-    const salaChat = mongoose.model('SalaChat', salaChatSchema);
-
-    //Obtener el beneficiario junto con su cliente y su estado
     let beneficiario: any = await this.servicioFunerarioService.ObtenerClienteyEstadodelBeneficiario(datos.beneficiarioId);
     if (beneficiario) {
       if (beneficiario.clienteBeneficiario.estado_cliente === true) {
@@ -90,18 +80,11 @@ export class ServicioFunerarioController {
             console.log("No hay un servicio con el mismo horario y sala");
             let sala: any = await this.servicioFunerarioService.ObtenerSalaConSedeYCiudad(datos.salaId);
             if (sala) {
-              if (sala.sede.ciudad.nombre !== datos.ubicacion_cuerpo) {
+              let ciudad_ubicacion_cuerpo: any = await this.servicioFunerarioService.ObtenerCiudadUbicacionCuerpo(datos.ubicacion_cuerpo);
+              if (sala.sede.ciudad.idCiudad !== ciudad_ubicacion_cuerpo.idCiudad) {
                 datos.servicio_traslado = true;
               }
               let codigo_unico = this.servicioFunerarioService.crearTextoAleatorio(8);
-
-              const salaChat1 = new salaChat({
-                codigoSalaChat: codigo_unico,
-                idCliente: beneficiario.clienteBeneficiario.id_cliente,
-                estadoSalaChat: true
-              });
-              await salaChat1.save();
-              console.log('salaChat guardada exitosamente en la base de datos');
 
               let url1 = ConfiguracionNotificaciones.urlNotificacionCodigoServicioFunerario;
               let datosCorreo1 = {
@@ -126,12 +109,23 @@ export class ServicioFunerarioController {
                 sede: sala.sede.nombre,
                 nombreUsuario: beneficiario.clienteBeneficiario.nombre + " " + beneficiario.clienteBeneficiario.apellido,
                 ciudad: sala.sede.ciudad.nombre,
-                ubicacionCuerpo: datos.ubicacion_cuerpo,
+                ubicacionCuerpo: ciudad_ubicacion_cuerpo.nombre,
                 beneficiario: beneficiario.nombre + " " + beneficiario.apellido,
                 tipoSepultura: datos.tipo_sepultura
               };
               this.servicioNotificaciones.EnviarNotificacion(datosCorreo, url);
 
+              //Creacion de la SalaChat en el microservicio de Chat
+              let urlChat = ConfiguracionNotificaciones.urlCreaciónSalaChat;
+              let datosChat = {
+                codigoSalaChat: codigo_unico,
+                cliente: beneficiario.clienteBeneficiario.documento,
+                estadoSalaChat: true
+              };
+              this.servicioChat.crearSalaChat(datosChat, urlChat);
+
+
+              //datos
               let servicioFunerario: ServicioFunerario = new ServicioFunerario;
               servicioFunerario.beneficiarioId = datos.beneficiarioId;
               servicioFunerario.codigo_unico = codigo_unico;

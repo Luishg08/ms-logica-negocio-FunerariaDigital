@@ -1,6 +1,6 @@
 import {BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {BeneficiarioRepository, ResenaRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {BeneficiarioRepository, CiudadRepository, ResenaRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
 const generator = require('generate-password');
 
 @injectable({scope: BindingScope.TRANSIENT})
@@ -12,7 +12,9 @@ export class ServicioFunerarioService {
     @repository(SalaRepository)
     public salaRepository: SalaRepository,
     @repository(ResenaRepository)
-    public resenaRepository: ResenaRepository
+    public resenaRepository: ResenaRepository,
+    @repository(CiudadRepository)
+    public ciudadRepository: CiudadRepository
   ) { }
 
   /*
@@ -103,6 +105,16 @@ export class ServicioFunerarioService {
     } catch (error) {
       console.log(error);
 
+      return null
+    }
+  }
+
+  async ObtenerCiudadUbicacionCuerpo(idCiudad: number) {
+    try {
+      let ciudad = await this.ciudadRepository.findById(idCiudad)
+      return ciudad
+    }
+    catch (error) {
       return null
     }
   }

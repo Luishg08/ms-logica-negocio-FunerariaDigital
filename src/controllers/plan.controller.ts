@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,31 +9,34 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Plan} from '../models';
-import {PlanRepository} from '../repositories';
-import {authenticate} from '@loopback/authentication';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {CredencialesPlanCategoria, Plan} from '../models';
+import {PlanRepository} from '../repositories';
+import {PlanService} from '../services';
 
 export class PlanController {
   constructor(
     @repository(PlanRepository)
-    public planRepository : PlanRepository,
-  ) {}
+    public planRepository: PlanRepository,
+    @service(PlanService)
+    public servicioPlan: PlanService
+  ) { }
 
-  @authenticate({
+  /*@authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.guardarAccion]
-  })
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.guardarAccion]
+  })*/
   @post('/plan')
   @response(200, {
     description: 'Plan model instance',
@@ -55,7 +60,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
   })
   @get('/plan/count')
   @response(200, {
@@ -70,7 +75,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
   })
   @get('/plan')
   @response(200, {
@@ -92,7 +97,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
   })
   @patch('/plan')
   @response(200, {
@@ -115,7 +120,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
   })
   @get('/plan/{id}')
   @response(200, {
@@ -135,7 +140,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
   })
   @patch('/plan/{id}')
   @response(204, {
@@ -157,7 +162,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.guardarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.guardarAccion]
   })
   @put('/plan/{id}')
   @response(204, {
@@ -172,7 +177,7 @@ export class PlanController {
 
   @authenticate({
     strategy: 'auth',
-    options:[ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.eliminarAccion]
+    options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.eliminarAccion]
   })
   @del('/plan/{id}')
   @response(204, {
@@ -181,4 +186,31 @@ export class PlanController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.planRepository.deleteById(id);
   }
+
+  @get('/plan-y-categoria')
+  @response(200, {
+    description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesPlanCategoria)}},
+  })
+  async obtenerUnPLanConCategoría(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CredencialesPlanCategoria)
+          }
+        }
+      }
+    )
+    datos: CredencialesPlanCategoria
+  ): Promise<Object> {
+    let plan = await this.servicioPlan.ObtenerPlanConCategoria(datos.idPlan)
+    if (plan) {
+      return plan
+    }
+    else {
+      return new HttpErrors[401]("El plan no existe")
+    }
+  }
+
 }

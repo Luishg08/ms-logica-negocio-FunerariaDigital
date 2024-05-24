@@ -15,3 +15,4 @@ export * from './sala.repository';
 export * from './sede.repository';
 export * from './servicio-funerario.repository';
 export * from './servicio-plan.repository';
+export * from './categoria-plan.repository';

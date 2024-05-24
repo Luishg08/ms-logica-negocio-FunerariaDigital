@@ -1,10 +1,25 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {Cliente} from './cliente.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
+import {CategoriaPlan} from './categoria-plan.model';
 import {ClientePlan} from './cliente-plan.model';
-import {ServicioPlan} from './servicio-plan.model';
+import {Cliente} from './cliente.model';
 import {PlanServicioPlan} from './plan-servicio-plan.model';
+import {ServicioPlan} from './servicio-plan.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_categoriaplanId: {
+        name: 'fk_categoriaplanId',
+        entity: 'CategoriaPlan',
+        entityKey: 'idCategoria',
+        foreignKey: 'categoriaPlanId',
+      },
+    },
+  },
+}
+  ,
+
+)
 export class Plan extends Entity {
   @property({
     type: 'number',
@@ -37,6 +52,7 @@ export class Plan extends Entity {
   })
   cantidad_beneficiarios: number;
 
+
   @hasMany(() => Cliente, {through: {model: () => ClientePlan}})
   clientes: Cliente[];
 
@@ -47,6 +63,9 @@ export class Plan extends Entity {
     type: 'number',
   })
   clientePlanId?: number;
+
+  @belongsTo(() => CategoriaPlan)
+  categoriaPlanId: number;
 
   constructor(data?: Partial<Plan>) {
     super(data);

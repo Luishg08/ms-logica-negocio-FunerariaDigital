@@ -32,10 +32,10 @@ export class ServicioFunerario extends Entity {
   id_servicio_funerario: number;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: true,
   })
-  ubicacion_cuerpo: string;
+  ubicacion_cuerpo: number;
 
   @property({
     type: 'string',
