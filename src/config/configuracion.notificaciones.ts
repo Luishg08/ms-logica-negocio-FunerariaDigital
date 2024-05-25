@@ -3,6 +3,7 @@ export namespace ConfiguracionNotificaciones {
   export const asuntoServicioFunerario = 'Notificación de Servicio Funerario'
   export const urlNotificacionCodigoServicioFunerario = 'http://localhost:5041/Notificaciones/correo-codigo-servicio-funerario'
   export const urlNotificacionAgradecimientoReseña = 'http://localhost:5041/Notificaciones/correo-agradecimiento-resena'
+  export const urlCreaciónSalaChat = 'http://localhost:3010/salas'
   export const asuntoAgradecimientoReseña = '¡Gracias por tu reseña!'
   export const asuntoCodigoServicioFunerario = 'Código único servicio funerario'
 }

@@ -43,3 +43,5 @@ export * from './servicio-funerario-beneficiario.controller';
 export * from './beneficiario-cliente.controller';
 export * from './metodo-pago-cliente-cliente.controller';
 export * from './cliente-plan-plan.controller';
+export * from './plan-categoria-plan.controller';
+export * from './categoria-plan.controller';
