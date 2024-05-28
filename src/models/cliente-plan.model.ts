@@ -39,7 +39,7 @@ export class ClientePlan extends Entity {
     type: 'date',
     required: true,
   })
-  fechaInicio: string;
+  fechaInicio: Date;
 
   @property({
     type: 'date',

@@ -1,6 +1,6 @@
-import {Entity, hasMany, model, property, belongsTo} from '@loopback/repository';
-import {Pago} from './pago.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
+import {Pago} from './pago.model';
 
 @model(
   {
@@ -41,6 +41,12 @@ export class MetodoPagoCliente extends Entity {
     type: 'string',
   })
   datos?: string;
+
+  @property({
+    type: 'string',
+  })
+  cvv: string;
+
   @property({
     type: 'number',
   })

@@ -175,7 +175,12 @@ export class MetodoDePagoClienteController {
       let metodosPago: any[] = await this.metodoPagoClienteRepository.find({
         where: {
           clienteId: cliente.id_cliente
-        }
+        },
+        include: [
+          {
+            relation: "miCliente"
+          },
+        ]
       })
       return metodosPago;
     }
