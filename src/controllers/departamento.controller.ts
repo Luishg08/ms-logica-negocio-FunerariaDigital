@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,33 +8,32 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Departamento} from '../models';
 import {DepartamentoRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
 
 export class DepartamentoController {
   constructor(
     @repository(DepartamentoRepository)
-    public departamentoRepository : DepartamentoRepository,
-  ) {}
+    public departamentoRepository: DepartamentoRepository,
+  ) { }
 
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.guardarAccion]
 
   })
-  
+
   @post('/departamento')
   @response(200, {
     description: 'Departamento model instance',
@@ -72,11 +72,11 @@ export class DepartamentoController {
     return this.departamentoRepository.count(where);
   }
 
-  @authenticate({
+  /*@authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuDepartamentoId, ConfiguracionSeguridad.listarAccion]
 
-  })
+  })*/
 
   @get('/departamento')
   @response(200, {

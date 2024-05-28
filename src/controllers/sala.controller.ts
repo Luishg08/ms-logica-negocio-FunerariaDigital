@@ -16,16 +16,21 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Sala} from '../models';
+import {CredencialesObtenerSalasSede, Sala} from '../models';
 import {SalaRepository} from '../repositories';
 import {authenticate} from '@loopback/authentication';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {service} from '@loopback/core';
+import {SalaService} from '../services';
 
 export class SalaController {
   constructor(
     @repository(SalaRepository)
     public salaRepository : SalaRepository,
+    @service(SalaService)
+    public salaService : SalaService
   ) {}
 
   @authenticate({
@@ -180,5 +185,30 @@ export class SalaController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.salaRepository.deleteById(id);
+  }
+
+  @post('/salas-de-una-sede')
+  @response(200, {
+    description: 'Obtener salas de una sede',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesObtenerSalasSede)}},
+  })
+  async ObtenerSalasDeUnaSede(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesObtenerSalasSede, {
+          }),
+        },
+      },
+    })
+    datos: CredencialesObtenerSalasSede,
+  ): Promise<Object> {
+    let salas = await this.salaService.ObtenerSalasDeUnaSede(datos.idSede);
+    if (salas == null) {
+      return new HttpErrors[404]("No se encontraron salas para la sede seleccionada")
+    }
+    else {
+      return salas
+    }
   }
 }

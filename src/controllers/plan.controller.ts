@@ -73,10 +73,10 @@ export class PlanController {
     return this.planRepository.count(where);
   }
 
-  @authenticate({
+  /*@authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.listarAccion]
-  })
+  })*/
   @get('/plan')
   @response(200, {
     description: 'Array of Plan model instances',
@@ -138,10 +138,10 @@ export class PlanController {
     return this.planRepository.findById(id, filter);
   }
 
-  @authenticate({
+  /*@authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuPlanId, ConfiguracionSeguridad.editarAccion]
-  })
+  })*/
   @patch('/plan/{id}')
   @response(204, {
     description: 'Plan PATCH success',

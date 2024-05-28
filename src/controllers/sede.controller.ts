@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,26 +9,29 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Sede} from '../models';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {CredencialesObtenerSedesCiudad, Sede} from '../models';
 import {SedeRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
+import {SedeService} from '../services';
 
 export class SedeController {
   constructor(
     @repository(SedeRepository)
-    public sedeRepository : SedeRepository,
-  ) {}
+    public sedeRepository: SedeRepository,
+    @service(SedeService)
+    public sedeService: SedeService
+  ) { }
 
 
   @authenticate({
@@ -181,5 +186,30 @@ export class SedeController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.sedeRepository.deleteById(id);
+  }
+
+  @post('/sedes-de-una-ciudad')
+  @response(200, {
+    description: 'Ciudad model instance',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesObtenerSedesCiudad)}},
+  })
+  async obtenerSedesDeUnaCiudad(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesObtenerSedesCiudad, {
+          }),
+        },
+      },
+    })
+    datos: CredencialesObtenerSedesCiudad,
+  ): Promise<Object> {
+    let sedes = await this.sedeService.ObtenerSedesDeUnaCiudad(datos.idCiudad);
+    if (sedes == null) {
+      return new HttpErrors[404]("No se encontraron sedes")
+    }
+    else {
+      return sedes
+    }
   }
 }

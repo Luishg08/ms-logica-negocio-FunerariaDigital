@@ -21,3 +21,7 @@ export * from './credenciales-resenar-servicio.model';
 export * from './credenciales-cambiar-estado-beneficiario.model';
 export * from './categoria-plan.model';
 export * from './credenciales-plan-categoria.model';
+export * from './credenciales-obtener-ciudades-departamento.model';
+export * from './credenciales-obtener-sedes-ciudad.model';
+export * from './credenciales-obtener-salas-sede.model';
+export * from './credenciales-obtener-cliente-con-correo.model';

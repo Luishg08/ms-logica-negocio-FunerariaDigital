@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {
   Count,
@@ -11,22 +12,21 @@ import {
   get,
   getModelSchemaRef,
   getWhereSchemaFor,
-  HttpErrors,
   param,
   patch,
   post,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {
   Cliente,
+  ClientePlan,
   CredencialesVerificarEstadoCliente,
   Plan
 } from '../models';
 import {ClienteRepository} from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { ConfiguracionSeguridad } from '../config/configuracion.seguridad';
-import { ClientePlanService } from '../services';
+import {ClientePlanService} from '../services';
 
 export class ClientePlanController {
   constructor(
@@ -158,17 +158,20 @@ export class ClientePlanController {
   ): Promise<Object> {
     let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario)
     if (cliente) {
-      let respuesta = await this.clientePlanService.verificarEstadoClientePlan(cliente.id_cliente)
-      if (respuesta) {
-        return new HttpErrors[401]("El plan del cliente esta activo");
-      }
-      else {
+      let respuesta: boolean | ClientePlan = await this.clientePlanService.verificarEstadoClientePlan(cliente.id_cliente)
+      if (respuesta == false) {
         cliente.estado_cliente = false;
         this.clienteRepository.updateById(cliente.id_cliente, cliente);
-        return new HttpErrors[401]("El plan del cliente ha expirado");
+        console.log("El plan del cliente ha expirado o no ha contratado ningún plan");
+        return false
+      }
+      else {
+        console.log("El plan del cliente está activo");
+        return respuesta
       }
     } else {
-      return new HttpErrors[401]("El usuario no tiene un cliente asignado");
+      console.log("El cliente no existe");
+      return false
     }
   }
 }

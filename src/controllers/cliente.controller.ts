@@ -1,4 +1,5 @@
 import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -19,13 +21,16 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
-import {Cliente} from '../models';
+import {Cliente, CredencialesObtenerClienteConCorreo, CredencialesVerificarEstadoCliente} from '../models';
 import {ClienteRepository} from '../repositories';
+import {ClientePlanService} from '../services';
 
 export class ClienteController {
   constructor(
     @repository(ClienteRepository)
     public clienteRepository: ClienteRepository,
+    @service(ClientePlanService)
+    public clientePlanService: ClientePlanService
   ) { }
 
   @authenticate({
@@ -99,7 +104,7 @@ export class ClienteController {
     options: [ConfiguracionSeguridad.menuClienteId, ConfiguracionSeguridad.editarAccion]
 
   })
-  
+
   @patch('/cliente')
   @response(200, {
     description: 'Cliente PATCH success count',
@@ -191,5 +196,56 @@ export class ClienteController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clienteRepository.deleteById(id);
+  }
+
+
+  @post('/usuario-tiene-cliente')
+  @response(200, {
+    description: 'Obtener cliente con usuario',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
+  })
+  async ObtenerClienteConUsuario(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesVerificarEstadoCliente, {
+          }),
+        },
+      },
+    })
+    datos: CredencialesVerificarEstadoCliente,
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConIdUsuario(datos.idUsuario);
+    if (cliente == null) {
+      return new HttpErrors[404]("No se encontró el cliente con el usuario proporcionado")
+    }
+    else {
+      return cliente
+    }
+  }
+
+  @post('/obtener-cliente-con-correo')
+  @response(200, {
+    description: 'Obtener cliente con correo',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesObtenerClienteConCorreo)}},
+  })
+  async ObtenerClienteConCorreo(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesObtenerClienteConCorreo, {
+          }),
+        },
+      },
+    })
+    datos: CredencialesObtenerClienteConCorreo,
+  ): Promise<Object> {
+    let cliente = await this.clientePlanService.obtenerClienteConCorreo(datos.correo);
+    if (cliente == null) {
+      return new HttpErrors[404]("No se encontró el cliente con el usuario proporcionado")
+    }
+    else {
+      return cliente
+    }
   }
 }

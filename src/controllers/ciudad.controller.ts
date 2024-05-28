@@ -1,4 +1,5 @@
-import { authenticate } from '@loopback/authentication'; 
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -19,13 +21,16 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
-import {Ciudad} from '../models';
+import {Ciudad, CredencialesObtenerCiudadesDepartamento} from '../models';
 import {CiudadRepository} from '../repositories';
+import {CiudadService} from '../services';
 
 export class CiudadController {
   constructor(
     @repository(CiudadRepository)
     public ciudadRepository: CiudadRepository,
+    @service(CiudadService)
+    public ciudadService: CiudadService
   ) { }
 
   @authenticate({
@@ -55,12 +60,38 @@ export class CiudadController {
     return this.ciudadRepository.create(ciudad);
   }
 
+  @post('/ciudades-de-un-departamento')
+  @response(200, {
+    description: 'Ciudad model instance',
+    content: {'application/json': {schema: getModelSchemaRef(CredencialesObtenerCiudadesDepartamento)}},
+  })
+  async obtenerCiudadesDeUnDepartamento(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesObtenerCiudadesDepartamento, {
+          }),
+        },
+      },
+    })
+    datos: CredencialesObtenerCiudadesDepartamento,
+  ): Promise<Object> {
+    let ciudades = await this.ciudadService.ObtenerCiudadesDeUnDepartamento(datos.idDepartamento)
+    if (ciudades == null) {
+      return new HttpErrors[404]("No se encontraron ciudades para el departamento seleccionado")
+    }
+    else {
+      return ciudades
+    }
+  }
+
+
   @authenticate({
     strategy: 'auth',
     options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.listarAccion]
 
   })
-  
+
   @get('/ciudad/count')
   @response(200, {
     description: 'Ciudad model count',
@@ -125,6 +156,9 @@ export class CiudadController {
     options: [ConfiguracionSeguridad.menuCiudadId, ConfiguracionSeguridad.listarAccion]
 
   })
+
+
+
 
   @get('/ciudad/{id}')
   @response(200, {

@@ -196,7 +196,7 @@ export class BeneficiarioController {
     await this.beneficiarioRepository.deleteById(id);
   }
 
-  @get('/beneficiarios-de-cliente')
+  @post('/beneficiarios-de-cliente')
   @response(200, {
     description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
     content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},

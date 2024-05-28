@@ -41,6 +41,7 @@ export class Cliente extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {unique: true}
   })
   id_usuario: string;
 
