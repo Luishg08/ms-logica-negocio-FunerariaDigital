@@ -202,6 +202,7 @@ export class ServicioFunerarioController {
     strategy: 'auth',
     options: [ConfiguracionSeguridad.servicioFunerarioId, ConfiguracionSeguridad.listarAccion]
   })
+  
   @get('/servicio-funerario-resenas')
   @response(200, {
     description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
