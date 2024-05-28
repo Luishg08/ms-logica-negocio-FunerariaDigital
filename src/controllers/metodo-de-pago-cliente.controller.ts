@@ -153,7 +153,7 @@ export class MetodoDePagoClienteController {
     await this.metodoPagoClienteRepository.deleteById(id);
   }
 
-  @get('/metodos-de-pago-de-un-cliente')
+  @post('/metodos-de-pago-de-un-cliente')
   @response(200, {
     description: 'Se muestran todos los servicios funerarios y las reseñas de un cliente',
     content: {'application/json': {schema: getModelSchemaRef(CredencialesVerificarEstadoCliente)}},
