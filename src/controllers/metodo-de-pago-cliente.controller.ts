@@ -180,6 +180,9 @@ export class MetodoDePagoClienteController {
           {
             relation: "miCliente"
           },
+          {
+            relation: "metodoPago"
+          }
         ]
       })
       return metodosPago;

@@ -45,3 +45,4 @@ export * from './metodo-pago-cliente-cliente.controller';
 export * from './cliente-plan-plan.controller';
 export * from './plan-categoria-plan.controller';
 export * from './categoria-plan.controller';
+export * from './metodo-pago-cliente-metodo-pago.controller';

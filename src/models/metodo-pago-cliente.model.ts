@@ -1,6 +1,7 @@
 import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
 import {Pago} from './pago.model';
+import {MetodoPago} from './metodo-pago.model';
 
 @model(
   {
@@ -27,7 +28,6 @@ export class MetodoPagoCliente extends Entity {
     type: 'number',
     id: true,
     generated: true,
-    required: true,
   })
   idMetodoPagoCliente: number;
 
@@ -46,17 +46,14 @@ export class MetodoPagoCliente extends Entity {
     type: 'string',
   })
   cvv: string;
-
-  @property({
-    type: 'number',
-  })
-  metodoPagoId?: number;
-
   @hasMany(() => Pago)
   pagos: Pago[];
 
   @belongsTo(() => Cliente, {name: 'miCliente'})
   clienteId: number;
+
+  @belongsTo(() => MetodoPago)
+  metodoPagoId: number;
 
   constructor(data?: Partial<MetodoPagoCliente>) {
     super(data);
