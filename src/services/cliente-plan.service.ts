@@ -67,4 +67,10 @@ export class ClientePlanService {
       return false
     }
   }
+
+
+  cambiarEstadoCliente(idCliente: number) {
+    this.clienteRepository.updateById(idCliente, {estado_cliente: true});
+  }
+
 }

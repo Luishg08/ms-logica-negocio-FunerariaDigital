@@ -49,6 +49,7 @@ export class ClientPlanController {
     })
     clientePlan: Omit<ClientePlan, 'id'>,
   ): Promise<ClientePlan> {
+    this.clientePlanService.cambiarEstadoCliente(clientePlan.clienteId!);
     return this.clientePlanRepository.create(clientePlan);
   }
 
